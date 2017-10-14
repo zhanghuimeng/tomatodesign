@@ -1,6 +1,8 @@
 Server Code Structure
 =================================
 
+![架构图](架构图.png)
+
 # configuration
 spring boot权限等的基本配置
 

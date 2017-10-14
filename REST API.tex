@@ -1,0 +1,843 @@
+% !Mode:: "TeX:UTF-8"
+\documentclass{article}
+\usepackage[hyperref, UTF8]{ctex}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\usepackage{fontspec}
+\usepackage{booktabs} % 表格上的不同横线
+\setmonofont[Mapping={}]{Consolas}	%英文引号之类的正常显示，相当于设置英文字体
+\setsansfont{Consolas} %设置英文字体 Monaco, Consolas,  Fantasque Sans Mono
+%\setmainfont{Consolas} %设置英文字体
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+    backgroundcolor=\color{white},   % choose the background color
+    basicstyle=\footnotesize\ttfamily,        % size of fonts used for the code
+    columns=fullflexible,
+    breaklines=true,                 % automatic line breaking only at whitespace
+    captionpos=b,                    % sets the caption-position to bottom
+    tabsize=4,
+    backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+    commentstyle=\color{mygreen},    % comment style
+    escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+    keywordstyle=\color{blue},       % keyword style
+    stringstyle=\color{mymauve}\ttfamily,     % string literal style
+    showstringspaces=false,                % 不显示字符串中的空格
+    frame=none,
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    % identifierstyle=\color{red},
+    language=c++,
+}
+
+% 设置hyperlink的颜色
+\newcommand\myshade{85}
+\colorlet{mylinkcolor}{violet}
+\colorlet{mycitecolor}{YellowOrange}
+\colorlet{myurlcolor}{Aquamarine}
+
+\hypersetup{
+  linkcolor  = mylinkcolor!\myshade!black,
+  citecolor  = mycitecolor!\myshade!black,
+  urlcolor   = myurlcolor!\myshade!black,
+  colorlinks = true,
+}
+
+\title{ASDAN商业竞赛项目 API设计}
+\author{Tomato小组}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\begin{enumerate}
+	\item Client API Endpoints: 为特定用户提供相关信息。
+	\item Admin API Endpoints: 为管理员提供相关信息。
+	\item Administrative Endpoints: 登录和交易时使用。
+	\item Utility Endpoints: 询问系统相关信息。
+\end{enumerate}
+
+\section{Client API Endpoints}
+
+为特定用户提供相关信息。
+
+\subsection{Get Property}
+
+输入ID，获得与这一ID相关的用户的全部信息。用户有默认头像。如果比赛还没有开始，则rank为0。
+
+TO-DO：用户自己设置头像。
+TO-DO：三个用户同时登录。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/client/property/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+{
+    "name": "team1",
+    "image": "/9j/4QAYRXhpZg ...."
+    "members": ["member11", "member12"],
+    "wealth": 100,
+    "rank": 1
+}
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+\subsection{Get Information}
+
+输入ID，获得与这一ID相关的用户的信息。包括机器的使用情况和材料的价格。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/client/info/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+{
+    "name": "team1",
+    "wealth": 100,
+    "machine": 
+    [
+        {
+            "id": "machine1_id", 
+            "type": "type1",
+            "left": "3"
+        },
+        {
+            "id": "machine2_id",
+            "type": "type2",
+            "left": "2"
+        }
+    ],
+    "material": 
+    [
+        {
+            "price": "10",
+            "number": "20",
+        },
+        {
+            "price": "20",
+            "number": "0",
+        },
+        {
+            "price": "80",
+            "number": "150",
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+\subsection{Update Information}
+
+向服务器发送更改过的信息。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+PUT /api/client/info/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+    "name": "team1",
+    "wealth": 100,
+    "machine":
+    [
+        {
+            "id": "machine1_id",
+            "left": "3"
+        },
+        {
+            "id": "machine2_id",
+            "left": "2"
+        }
+    ],
+    "material":
+    [
+        {
+            "price": "10",
+            "number": "20",
+        },
+        {
+            "price": "20",
+            "number": "0",
+        },
+        {
+            "price": "80",
+            "number": "150",
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+{
+    "name": "team1",
+    "wealth": 100,
+    "machine": ["machine1_id", "machine2_id", "machine3_id"],
+    "material": ["10", "20", "0"}
+}
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error": "Unable to update. User with id xxx not found."
+}
+\end{lstlisting}
+
+\subsection{Get History}
+
+获取与某一用户相关的历史信息。在发订单的时候客户端手动更新History。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/client/history/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+[
+	{
+	    "time": "hh:MM:ss",
+	    "target": "team1",
+        "action": "sell",
+	    "content": {"material1": 1},
+        "price": "10",
+	    "status": "success",
+	},
+	{
+	    "time": "hh:MM:ss",
+	    "target": "team1",
+        "action": "buy",
+	    "content": {"material1": 1},
+        "price": "10",
+	    "status": "fail",
+	}
+]
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+
+
+
+
+
+\section{Admin API Endpoints}
+\subsection{Get All Competitions}
+
+列出全部比赛。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/admin/competition/getall
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+[
+	{
+	    "id": "competiton1_id",
+	    "name": "competition1",
+	    "status": "processing"
+	},
+	{
+	    "id": "competiton2_id",
+	    "name": "competition2",
+	    "status": "end"
+	}
+]
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 204 NO CONTENT
+\end{lstlisting}
+
+\subsection{Create Competition}
+新建一场比赛。注意，底层也要生成机器的id。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/admin/competition/new
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+    "name": "competition_name",
+    "round": "2",
+    "start_wealth": "1000", 
+    "round_parameter":
+    [
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        },
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 201 CREATED
+{
+    "id": "competition_id",
+    "name": "competition_name",
+    "status": "not started",
+    "round": "2",
+    "start_wealth": "1000", 
+    "round_parameter":
+    [
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        },
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        }
+    ]
+}
+
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error":"Unable to delete. Competition with id xxx not found."
+}
+\end{lstlisting}
+
+
+\subsection{Delete Competition By ID}
+
+通过ID删除比赛。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+DELETE /api/admin/competiton/id={competition_id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 204 NO CONTENT
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+{
+    "error":"Unable to delete. Competition with id xxx not found."
+}
+\end{lstlisting}
+
+\subsection{Update Competition Status}
+
+更新比赛状态。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/admin/competition/status/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+	"status": "processing"
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error":"Unable to update. Competition with id xxx not found"
+}
+\end{lstlisting}
+
+\subsection{Generate Accounts}
+
+要求系统生成比赛账户和密码。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/admin/competition/accounts/id={id}?number={number}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 201 CREATED
+[
+    {
+        "client_id": "id1",
+	    "username": "username1",
+	    "password": "password1",
+	},
+	{
+        "client_id": "id2",
+	    "username": "username2",
+	    "password": "password2",
+	},
+]
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error":"Competition with id xxxx not found"
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+HTTP 409 CONFLICT
+{
+    "error":"Cannot generate accounts for competition with id xxxx"
+}
+\end{lstlisting}
+
+\subsection{Get Competition Property}
+
+从服务器按id获取某一比赛的各种属性。如果该比赛的属性尚未被设置，则该项为空。属性包括名称、比赛轮数（如果比赛已开始，则不能删除已开始或结束的轮）、比赛各项参数（不能修改已开始或结束的轮的参数）、机器的id等等。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/admin/competition/property/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+{
+    "id": "competition_id",
+    "name": "competition_name",
+    "status": "not started",
+    "round": "2",
+    "start_wealth": "1000",
+    "round_parameter":
+    [
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "machine_id": ["id1", "id2", "id3"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        },
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "machine_id": ["id1", "id2", "id3"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        }
+    ]
+}
+
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error": "Competition with id xxx not found."
+}
+\end{lstlisting}
+
+\subsection{Update Competition Property}
+
+更新比赛的各种属性。属性包括名称、比赛轮数（如果比赛已开始，则不能删除已开始或结束的轮）、比赛各项参数（不能修改已开始或结束的轮的参数）。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+PUT /api/admin/competition/property/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+    "name": "competition_name",
+    "round": "2",
+    "start_wealth": "1000",
+    "round_parameter":
+    [
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        },
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "time": "900",
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 201 CREATED
+
+{
+    "id": "competition_id",
+    "name": "competition_name",
+    "round": "2",
+    "start_wealth": "1000",
+    "round_parameter":
+    [
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "machine_id": ["id1", "id2", "id3"],
+            "time": "900",
+        },
+        {
+            "machine_start_price": ["300", "350", "400"],
+            "material_produce_cost": ["10", "20", "30"],
+            "machine_id": ["id1", "id2", "id3"],
+            "time": "900",
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error": "Competition with id xxx not found."
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+HTTP 400 INVALID REQUEST
+{
+    "error": "Cannot update competition id xxx with given changes."
+}
+\end{lstlisting}
+
+\subsection{Get Competition Information}
+获取当前比赛信息，包括队伍的数量、资产、交易记录、机器的使用情况等。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/admin/competition/info/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+{
+    "id": "competition_id",
+    "name": "competition_name",
+    "status": "not started",
+    "round": "2",
+    "present_round": "0",
+    "team_info":
+    [
+        {
+            "id": "id1",
+            "wealth": "100",
+            "material": ["30", "40", "50"],
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "type": "type1",
+                    "left": "3"
+                 },
+                 {
+                    "id": "machine2_id",
+                    "type": "type2",
+                    "left": "2"
+                 }
+            ]
+        },
+        {
+            "id": "id2",
+            "wealth": "100",
+            "material": ["30", "40", "50"],
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "type": "type1",
+                    "left": "3"
+                 },
+                 {
+                    "id": "machine2_id",
+                    "type": "type2",
+                    "left": "2"
+                 }
+            ]
+        }
+    ],
+    "trade_history":
+    [
+        {
+            "time": "hh:MM:ss",
+            "sell": "team_id1",
+            "buy": "team_id2",
+            "content": {"material1": 1},
+            "price": "10"
+        },
+         {
+            "time": "hh:MM:ss",
+            "sell": "team_id1",
+            "buy": "team_id2",
+            "content": {"material2": 1},
+            "price": "20"
+        }
+    ]
+}
+
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error": "Competition with id 1 not found."
+}
+\end{lstlisting}
+
+\subsection{Update Competition Information}
+向服务器发送对比赛的更新信息。增加机器、分配财产之类的。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+PUT /api/admin/competition/info/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+    "round": "2",
+    "present_round": "0",
+    "team_info":
+    [
+        {
+            "id": "id1",
+            "wealth": "100",
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "left": "3"
+                 },
+                 {
+                    "id": "machine2_id",
+                    "left": "2"
+                 }
+            ]
+        },
+        {
+            "id": "id2",
+            "wealth": "100",
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "left": "3"
+                 },
+                 {
+                    "id": "machine2_id",
+                    "left": "2"
+                 }
+            ]
+        }
+    ]
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+{
+    "id": "competition_id",
+    "name": "competition_name",
+    "status": "not started",
+    "round": "2",
+    "present_round": "0",
+    "team_info":
+    [
+        {
+            "id": "id1",
+            "wealth": "100",
+            "material": ["30", "40", "50"],
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "type": "type1",
+                    "left": "3"
+                 },
+                 {
+                    "id": "machine2_id",
+                    "type": "type2",
+                    "left": "2"
+                 }
+            ]
+        },
+        {
+            "id": "id2",
+            "wealth": "100",
+            "material": ["30", "40", "50"],
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "type": "type1",
+                    "left": "3"
+                 },
+                 {
+                    "id": "machine2_id",
+                    "type": "type2",
+                    "left": "2"
+                 }
+            ]
+        }
+    ],
+    "trade_history":
+    [
+        {
+            "time": "hh:MM:ss",
+            "sell": "team_id1",
+            "buy": "team_id2",
+            "content": {"material1": 1},
+            "price": "10"
+        },
+         {
+            "time": "hh:MM:ss",
+            "sell": "team_id1",
+            "buy": "team_id2",
+            "content": {"material2": 1},
+            "price": "20"
+        }
+    ]
+}
+
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error": "Competition with id xxx not found."
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+HTTP 400 INVALID REQUEST
+{
+    "error": "Cannot update competition id xxx with given information."
+}
+\end{lstlisting}
+
+\section{Administrative Endpoints}
+登录和交易时使用。
+
+\section{Utility Endpoints}
+询问系统相关信息。
+
+\end{document}
