@@ -127,10 +127,10 @@ HTTP 200 OK
 {
     "name": "team1",
     "wealth": 100,
-    "machine": 
+    "machine":
     [
         {
-            "id": "machine1_id", 
+            "id": "machine1_id",
             "type": "type1",
             "left": "3"
         },
@@ -140,7 +140,7 @@ HTTP 200 OK
             "left": "2"
         }
     ],
-    "material": 
+    "material":
     [
         {
             "price": "10",
@@ -329,7 +329,7 @@ Accept: application/json
 {
     "name": "competition_name",
     "round": "2",
-    "start_wealth": "1000", 
+    "start_wealth": "1000",
     "round_parameter":
     [
         {
@@ -354,7 +354,7 @@ HTTP 201 CREATED
     "name": "competition_name",
     "status": "not started",
     "round": "2",
-    "start_wealth": "1000", 
+    "start_wealth": "1000",
     "round_parameter":
     [
         {
@@ -836,6 +836,78 @@ HTTP 400 INVALID REQUEST
 
 \section{Administrative Endpoints}
 登录和交易时使用。
+
+\subsection{Login Admin}
+管理员登录。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/admin/login
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+    "username": "admin",
+    "password": "admin",
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+{
+    "username": "admin",
+    "token": "1283091828021803120",
+}
+
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 401 NOTAUTHORIZED
+{
+    "error": "Admin with username admin doesn\'t exist or password is wrong."
+}
+\end{lstlisting}
+
+\subsection{Login Client}
+管理员登录。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/client/login
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+    "username": "client",
+    "password": "client",
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+{
+    "username": "client",
+    "token": "1283091828021803120",
+}
+
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 401 NOTAUTHORIZED
+{
+    "error": "Client with username admin doesn\'t exist or password is wrong."
+}
+\end{lstlisting}
 
 \section{Utility Endpoints}
 询问系统相关信息。
