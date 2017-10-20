@@ -10,6 +10,7 @@
 
 # Setting Page
 <ol>
+<li> When user click submit, pop up warning saying basic config cannot modify after.
 <li> If the competition ID doesn't exist, pop up warning and redirect to the previous page.
 <li> Check the input in text field is in correct format (e.g. number, date).
 <li> Check each required field is filled before sending request to backend.
