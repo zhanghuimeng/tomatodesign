@@ -315,7 +315,7 @@ HTTP 204 NO CONTENT
 \end{lstlisting}
 
 \subsection{Create Competition}
-新建一场比赛。注意，底层也要生成机器的id。
+新建一场比赛。注意，底层也要生成机器的id。注意每场比赛的基本配置（比赛名称，参赛人数）只能创建一次，不能修改。
 
 \subsubsection*{Request}
 \begin{lstlisting}
@@ -329,18 +329,20 @@ Accept: application/json
 {
     "name": "competition_name",
     "round": "2",
-    "start_wealth": "1000",
-    "round_parameter":
+    "startWealth": "1000",
+    "roundParameter":
     [
         {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
+            "machineStartPrice": [300, 350, 400],
+            "machineNum": [1, 1, 1],
+            "materialProduceCost": [10, 20, 30],
+            "time": 900,
         },
         {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
+            "machineStartPrice": [300, 350, 400],
+            "machineNum": [1, 1, 1],
+            "materialProduceCost": [10, 20, 30],
+            "time": 900,
         }
     ]
 }
@@ -349,26 +351,6 @@ Accept: application/json
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 201 CREATED
-{
-    "id": "competition_id",
-    "name": "competition_name",
-    "status": "not started",
-    "round": "2",
-    "start_wealth": "1000",
-    "round_parameter":
-    [
-        {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
-        },
-        {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
-        }
-    ]
-}
 
 \end{lstlisting}
 
@@ -397,7 +379,14 @@ Accept: application/json
 
 \subsubsection*{Returns}
 \begin{lstlisting}
-HTTP 204 NO CONTENT
+HTTP 200 OK
+[
+	{
+	    "id": "competiton2_id",
+	    "name": "competition2",
+	    "status": "end"
+	}
+]
 \end{lstlisting}
 
 \subsubsection*{Error}
@@ -438,51 +427,6 @@ HTTP 404 NOT FOUND
 }
 \end{lstlisting}
 
-\subsection{Generate Accounts}
-
-要求系统生成比赛账户和密码。
-
-\subsubsection*{Request}
-\begin{lstlisting}
-POST /api/admin/competition/accounts/id={id}?number={number}
-
-Host: localhost:8080
-Auth:
-Content-type: application/json
-Accept: application/json
-\end{lstlisting}
-
-\subsubsection*{Returns}
-\begin{lstlisting}
-HTTP 201 CREATED
-[
-    {
-        "client_id": "id1",
-	    "username": "username1",
-	    "password": "password1",
-	},
-	{
-        "client_id": "id2",
-	    "username": "username2",
-	    "password": "password2",
-	},
-]
-\end{lstlisting}
-
-\subsubsection*{Error}
-\begin{lstlisting}
-HTTP 404 NOT FOUND
-{
-    "error":"Competition with id xxxx not found"
-}
-\end{lstlisting}
-
-\begin{lstlisting}
-HTTP 409 CONFLICT
-{
-    "error":"Cannot generate accounts for competition with id xxxx"
-}
-\end{lstlisting}
 
 \subsection{Get Competition Property}
 
@@ -505,21 +449,25 @@ HTTP 200 OK
     "id": "competition_id",
     "name": "competition_name",
     "status": "not started",
-    "round": "2",
-    "start_wealth": "1000",
-    "round_parameter":
+    "teamNum": 1,
+    "participantNum": 2,
+    "team":
     [
         {
-            "machine_start_price": ["300", "350", "400"],
-            "machine_id": ["id1", "id2", "id3"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
-        },
+            "name": "team1",
+            "participant": ["member1", "member2", "member2"],
+            "password": "password",
+        }
+    ]
+    "round": "1",
+    "startWealth": "1000",
+    "roundParameter":
+    [
         {
-            "machine_start_price": ["300", "350", "400"],
-            "machine_id": ["id1", "id2", "id3"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
+            "machineStartPrice": [300, 350, 400],
+            "machineNum": [1, 1, 1],
+            "materialProduceCost": [10, 20, 30],
+            "time": 900,
         }
     ]
 }
@@ -536,7 +484,7 @@ HTTP 404 NOT FOUND
 
 \subsection{Update Competition Property}
 
-更新比赛的各种属性。属性包括名称、比赛轮数（如果比赛已开始，则不能删除已开始或结束的轮）、比赛各项参数（不能修改已开始或结束的轮的参数）。
+更新比赛的各种属性。属性包括名称、比赛轮数（如果比赛已开始，则不能更改）、比赛各项参数（不能修改已开始或结束的轮的参数）。
 
 \subsubsection*{Request}
 \begin{lstlisting}
@@ -548,20 +496,21 @@ Content-type: application/json
 Accept: application/json
 
 {
-    "name": "competition_name",
     "round": "2",
-    "start_wealth": "1000",
+    "startWealth": "1000",
     "round_parameter":
     [
         {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
+            "machineStartPrice": [300, 350, 400],
+            "machineNum": [1, 1, 1],
+            "materialProduceCost": [10, 20, 30],
+            "time": 900,
         },
         {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "time": "900",
+            "machineStartPrice": [300, 350, 400],
+            "machineNum": [1, 1, 1],
+            "materialProduceCost": [10, 20, 30],
+            "time": 900,
         }
     ]
 }
@@ -570,28 +519,6 @@ Accept: application/json
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 201 CREATED
-
-{
-    "id": "competition_id",
-    "name": "competition_name",
-    "round": "2",
-    "start_wealth": "1000",
-    "round_parameter":
-    [
-        {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "machine_id": ["id1", "id2", "id3"],
-            "time": "900",
-        },
-        {
-            "machine_start_price": ["300", "350", "400"],
-            "material_produce_cost": ["10", "20", "30"],
-            "machine_id": ["id1", "id2", "id3"],
-            "time": "900",
-        }
-    ]
-}
 \end{lstlisting}
 
 \subsubsection*{Error}
