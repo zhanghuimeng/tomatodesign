@@ -24,3 +24,5 @@
 
 # Competition Detail Page
 Not started yet.
+
+### Please list your new feature requests or report bug here. And I'll decide whether to handle this :).
