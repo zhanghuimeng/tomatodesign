@@ -1,7 +1,7 @@
 % !Mode:: "TeX:UTF-8"
 \documentclass{article}
 \usepackage[hyperref, UTF8]{ctex}
-\usepackage[dvipsnames]{xcolor}
+\usepackage[dvipsusernames]{xcolor}
 \usepackage{geometry}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -10,14 +10,13 @@
 \usepackage{pgfplots}
 \usepackage{fontspec}
 \usepackage{booktabs} % 表格上的不同横线
-\setmonofont[Mapping={}]{Consolas}	%英文引号之类的正常显示，相当于设置英文字体
-\setsansfont{Consolas} %设置英文字体 Monaco, Consolas,  Fantasque Sans Mono
-%\setmainfont{Consolas} %设置英文字体
+
+
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
-\lstset{ %
+\lstset{ %userusername
     backgroundcolor=\color{white},   % choose the background color
     basicstyle=\footnotesize\ttfamily,        % size of fonts used for the code
     columns=fullflexible,
@@ -39,8 +38,6 @@
 % 设置hyperlink的颜色
 \newcommand\myshade{85}
 \colorlet{mylinkcolor}{violet}
-\colorlet{mycitecolor}{YellowOrange}
-\colorlet{myurlcolor}{Aquamarine}
 
 \hypersetup{
   linkcolor  = mylinkcolor!\myshade!black,
@@ -71,13 +68,39 @@
 
 为特定用户提供相关信息。
 
-\subsection{Get Property}
-
-输入ID，获得与这一ID相关的用户的全部信息。用户有默认头像。如果比赛还没有开始，则rank为0。
+\subsection{Get Information}
+输入ID，获得与这一ID相关的用户的配置信息。用户有默认头像。如果比赛还没有开始，则rank为0。
 
 TO-DO：用户自己设置头像。
 TO-DO：三个用户同时登录。
 
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/client/info/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+{
+    "username": "team1",
+    "id":"3",
+    "avatar": "/9j/4QAYRXhpZg ....",
+    "gameStatus": "第2轮"
+    "rank": 1
+}
+\end{lstlisting}
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+\subsection{Get Property}
+输入ID，获得与这一ID相关的用户的财产信息。包括机器的使用情况和材料的价格。
 \subsubsection*{Request}
 \begin{lstlisting}
 GET /api/client/property/id={id}
@@ -93,66 +116,40 @@ Accept: application/json
 HTTP 200 OK
 
 {
-    "name": "team1",
-    "image": "/9j/4QAYRXhpZg ...."
-    "members": ["member11", "member12"],
-    "wealth": 100,
-    "rank": 1
-}
-\end{lstlisting}
-
-\subsubsection*{Error}
-\begin{lstlisting}
-HTTP 404 NOT FOUND
-\end{lstlisting}
-
-\subsection{Get Information}
-
-输入ID，获得与这一ID相关的用户的信息。包括机器的使用情况和材料的价格。
-
-\subsubsection*{Request}
-\begin{lstlisting}
-GET /api/client/info/id={id}
-
-Host: localhost:8080
-Auth:
-Content-type: application/json
-Accept: application/json
-\end{lstlisting}
-
-\subsubsection*{Returns}
-\begin{lstlisting}
-HTTP 200 OK
-
-{
-    "name": "team1",
-    "wealth": 100,
-    "machine":
+   "machine":
     [
         {
-            "id": "machine1_id",
+            "id": "0073",
             "type": "type1",
-            "left": "3"
+            "left": 3
         },
         {
-            "id": "machine2_id",
+            "id": "0793",
+            "type": "type1",
+            "left": 0
+        },
+        {
+            "id": "8765",
             "type": "type2",
-            "left": "2"
+            "left": 2
         }
     ],
     "material":
     [
         {
-            "price": "10",
-            "number": "20",
+            "type": "wood",
+            "price": 10,
+            "number": 20,
+        },
+        {  
+           "type": "brick",
+            "price": 20,
+            "number": 0,
         },
         {
-            "price": "20",
-            "number": "0",
-        },
-        {
-            "price": "80",
-            "number": "150",
+          "type": "cement",
+            "price": 80,
+            "number": 150,
         }
     ]
 }
@@ -163,10 +160,13 @@ HTTP 200 OK
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
+
+
+
+
+
 \subsection{Update Information}
-
-向服务器发送更改过的信息。
-
+向服务器发送更改过的用户配置信息。
 \subsubsection*{Request}
 \begin{lstlisting}
 PUT /api/client/info/id={id}
@@ -177,49 +177,96 @@ Content-type: application/json
 Accept: application/json
 
 {
-    "name": "team1",
-    "wealth": 100,
-    "machine":
+    "username": "team1",
+    "id":3,
+    "avatar": ".....",
+    "rank": 1,
+}
+\end{lstlisting}
+subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+{
+    "username": "team1",
+    "id":3,
+    "avatar": "/9j/4QAYRXhpZg ....",
+    "rank": 1
+}
+\end{lstlisting}
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+
+
+
+
+
+
+
+\subsection{Update Property}
+向服务器发送更改过的用户资产信息。
+\subsubsection*{Request}
+\begin{lstlisting}
+PUT /api/client/property/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+   "machine":
     [
         {
-            "id": "machine1_id",
-            "left": "3"
+            "id": "0073",
+            "type": "type1",
+            "left": 3
         },
         {
-            "id": "machine2_id",
-            "left": "2"
+            "id": "0793",
+            "type": "type1",
+            "left": 0
+        },
+        {
+            "id": "8765",
+            "type": "type2",
+            "left": 2
         }
     ],
     "material":
     [
         {
-            "price": "10",
-            "number": "20",
+       	   "type": "wood",
+            "price": 10,
+            "number": 20,
         },
         {
-            "price": "20",
-            "number": "0",
+       	   "type": "brick",
+            "price": 20,
+            "number": 0,
         },
         {
-            "price": "80",
-            "number": "150",
+       	   "type": "cement",
+            "price": 80,
+            "number": 150,
         }
     ]
 }
 \end{lstlisting}
-
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
 {
-    "name": "team1",
+    "username": "team1",
     "wealth": 100,
     "machine": ["machine1_id", "machine2_id", "machine3_id"],
     "material": ["10", "20", "0"}
 }
 \end{lstlisting}
-
 \subsubsection*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
@@ -228,10 +275,147 @@ HTTP 404 NOT FOUND
 }
 \end{lstlisting}
 
+
+
+
+
+
+
+\subsection{Produce}
+向服务器发送 开始生产的请求
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/client/info/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+   "id":2,
+   "number": 2
+}
+\end{lstlisting}
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+\end{lstlisting}
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+
+
+
+
+\subsection{Sell Material}
+向服务器发送 出售的Material的种类和数量
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/client/property/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+   "type":"wood",
+   "number": 2
+}
+\end{lstlisting}
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+\subsection{Sell Machine}
+向服务器发送: 出售的机器的id
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/client/property/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+	"id": 9870
+	"left":3
+}
+\end{lstlisting}
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+{
+   "machine":
+    [
+        {
+            "id": "0073",
+            "type": "type1",
+            "left": 3
+        },
+        {
+            "id": "0793",
+            "type": "type1",
+            "left": 0
+        },
+        {
+            "id": "8765",
+            "type": "type2",
+            "left": 2
+        }
+    ],
+    "material":
+    [
+        {
+       	   "type": "wood",
+            "price": 10,
+            "number": 20,
+        },
+        {
+       	   "type": "brick",
+            "price": 20,
+            "number": 0,
+        },
+        {
+       	   "type": "cement",
+            "price": 80,
+            "number": 150,
+        }
+    ]
+}
+\end{lstlisting}
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+
+
+
+
+
+
 \subsection{Get History}
-
 获取与某一用户相关的历史信息。在发订单的时候客户端手动更新History。
-
 \subsubsection*{Request}
 \begin{lstlisting}
 GET /api/client/history/id={id}
@@ -241,7 +425,6 @@ Auth:
 Content-type: application/json
 Accept: application/json
 \end{lstlisting}
-
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
@@ -265,7 +448,6 @@ HTTP 200 OK
 	}
 ]
 \end{lstlisting}
-
 \subsubsection*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
@@ -298,12 +480,12 @@ HTTP 200 OK
 [
 	{
 	    "id": "competiton1_id",
-	    "name": "competition1",
+	    "username": "competition1",
 	    "status": "processing"
 	},
 	{
 	    "id": "competiton2_id",
-	    "name": "competition2",
+	    "username": "competition2",
 	    "status": "end"
 	}
 ]
@@ -327,7 +509,7 @@ Content-type: application/json
 Accept: application/json
 
 {
-    "name": "competition_name",
+    "username": "competition_username",
     "round": "2",
     "startWealth": "1000",
     "roundParameter":
@@ -383,7 +565,7 @@ HTTP 200 OK
 [
 	{
 	    "id": "competiton2_id",
-	    "name": "competition2",
+	    "username": "competition2",
 	    "status": "end"
 	}
 ]
@@ -447,14 +629,14 @@ Accept: application/json
 HTTP 200 OK
 {
     "id": "competition_id",
-    "name": "competition_name",
+    "username": "competition_username",
     "status": "not started",
     "teamNum": 1,
     "participantNum": 2,
     "team":
     [
         {
-            "name": "team1",
+            "username": "team1",
             "participant": ["member1", "member2", "member2"],
             "password": "password",
         }
@@ -554,7 +736,7 @@ Accept: application/json
 HTTP 200 OK
 {
     "id": "competition_id",
-    "name": "competition_name",
+    "username": "competition_username",
     "status": "not started",
     "round": "2",
     "present_round": "0",
@@ -682,7 +864,7 @@ Accept: application/json
 HTTP 200 OK
 {
     "id": "competition_id",
-    "name": "competition_name",
+    "username": "competition_username",
     "status": "not started",
     "round": "2",
     "present_round": "0",
@@ -786,7 +968,7 @@ Accept: application/json
 \begin{lstlisting}
 HTTP 200 OK
 {
-    "username": "admin",
+    "usersname": "admin",
     "token": "1283091828021803120",
 }
 
@@ -796,12 +978,12 @@ HTTP 200 OK
 \begin{lstlisting}
 HTTP 401 NOTAUTHORIZED
 {
-    "error": "Admin with username admin doesn\'t exist or password is wrong."
+    "error": "Admin with userusername admin doesn\'t exist or password is wrong."
 }
 \end{lstlisting}
 
 \subsection{Login Client}
-管理员登录。
+用户登录。
 
 \subsubsection*{Request}
 \begin{lstlisting}
@@ -814,6 +996,7 @@ Accept: application/json
 
 {
     "username": "client",
+    "id": "3",
     "password": "client",
 }
 \end{lstlisting}
@@ -832,7 +1015,7 @@ HTTP 200 OK
 \begin{lstlisting}
 HTTP 401 NOTAUTHORIZED
 {
-    "error": "Client with username admin doesn\'t exist or password is wrong."
+    "error": "Client with userusername admin doesn\'t exist or password is wrong."
 }
 \end{lstlisting}
 
