@@ -24,6 +24,9 @@
 </ol>
 
 # Competition Detail Page
-Not started yet.
+<ol>
+<li> Disable start button when the competition has ended.
+<li> Support importing and exporting files.
+</ol>
 
 ### Please list your new feature requests or report bug here. And I'll decide whether to handle this :).
