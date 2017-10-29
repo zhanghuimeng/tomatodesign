@@ -1,7 +1,7 @@
 % !Mode:: "TeX:UTF-8"
 \documentclass{article}
 \usepackage[hyperref, UTF8]{ctex}
-\usepackage[dvipsusernames]{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{geometry}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -10,13 +10,14 @@
 \usepackage{pgfplots}
 \usepackage{fontspec}
 \usepackage{booktabs} % 表格上的不同横线
-
-
+\setmonofont[Mapping={}]{Consolas}	%英文引号之类的正常显示，相当于设置英文字体
+\setsansfont{Consolas} %设置英文字体 Monaco, Consolas,  Fantasque Sans Mono
+%\setmainfont{Consolas} %设置英文字体
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
-\lstset{ %userusername
+\lstset{ %
     backgroundcolor=\color{white},   % choose the background color
     basicstyle=\footnotesize\ttfamily,        % size of fonts used for the code
     columns=fullflexible,
@@ -38,6 +39,8 @@
 % 设置hyperlink的颜色
 \newcommand\myshade{85}
 \colorlet{mylinkcolor}{violet}
+\colorlet{mycitecolor}{YellowOrange}
+\colorlet{myurlcolor}{Aquamarine}
 
 \hypersetup{
   linkcolor  = mylinkcolor!\myshade!black,
@@ -45,6 +48,7 @@
   urlcolor   = myurlcolor!\myshade!black,
   colorlinks = true,
 }
+
 
 \title{ASDAN商业竞赛项目 API设计}
 \author{Tomato小组}
@@ -63,6 +67,13 @@
 	\item Administrative Endpoints: 登录和交易时使用。
 	\item Utility Endpoints: 询问系统相关信息。
 \end{enumerate}
+
+\section{一些修改及说明}
+10.29：修改了时间的表示方法，目前按照ISO-8601格式，具体请参照这篇文章：\url{https://stackoverflow.com/questions/19013562/java-dates-and-standard-formats}。
+
+\begin{lstlisting}
+"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+\end{lstlisting}
 
 \section{Client API Endpoints}
 
@@ -99,6 +110,13 @@ HTTP 200 OK
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
+
+
+
+
+
+
+
 \subsection{Get Property}
 输入ID，获得与这一ID相关的用户的财产信息。包括机器的使用情况和材料的价格。
 \subsubsection*{Request}
@@ -116,6 +134,7 @@ Accept: application/json
 HTTP 200 OK
 
 {
+   "wealth": 3000,
    "machine":
     [
         {
@@ -141,7 +160,7 @@ HTTP 200 OK
             "price": 10,
             "number": 20,
         },
-        {  
+        {
            "type": "brick",
             "price": 20,
             "number": 0,
@@ -203,14 +222,11 @@ HTTP 404 NOT FOUND
 
 
 
-
-
-
-\subsection{Update Property}
-向服务器发送更改过的用户资产信息。
+\subsection{Produce}
+向服务器发送 需要生产啊的机器的ID和生产次数
 \subsubsection*{Request}
 \begin{lstlisting}
-PUT /api/client/property/id={id}
+POST /api/client/property/produce/id={id}
 
 Host: localhost:8080
 Auth:
@@ -218,6 +234,16 @@ Content-type: application/json
 Accept: application/json
 
 {
+   "id":2,
+   "times":1,
+}
+\end{lstlisting}
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+{
+   "wealth":1000,
    "machine":
     [
         {
@@ -256,51 +282,6 @@ Accept: application/json
     ]
 }
 \end{lstlisting}
-\subsubsection*{Returns}
-\begin{lstlisting}
-HTTP 200 OK
-
-{
-    "username": "team1",
-    "wealth": 100,
-    "machine": ["machine1_id", "machine2_id", "machine3_id"],
-    "material": ["10", "20", "0"}
-}
-\end{lstlisting}
-\subsubsection*{Error}
-\begin{lstlisting}
-HTTP 404 NOT FOUND
-{
-    "error": "Unable to update. User with id xxx not found."
-}
-\end{lstlisting}
-
-
-
-
-
-
-
-\subsection{Produce}
-向服务器发送 开始生产的请求
-\subsubsection*{Request}
-\begin{lstlisting}
-POST /api/client/info/id={id}
-
-Host: localhost:8080
-Auth:
-Content-type: application/json
-Accept: application/json
-
-{
-   "id":2,
-   "number": 2
-}
-\end{lstlisting}
-\subsubsection*{Returns}
-\begin{lstlisting}
-HTTP 200 OK
-\end{lstlisting}
 \subsubsection*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
@@ -311,10 +292,10 @@ HTTP 404 NOT FOUND
 
 
 \subsection{Sell Material}
-向服务器发送 出售的Material的种类和数量
+向服务器发送 出售的Material的种类，数量，和单位数量的价格，以及接受的人的ID
 \subsubsection*{Request}
 \begin{lstlisting}
-POST /api/client/property/id={id}
+POST /api/client/property/sellMaterial/id={id}
 
 Host: localhost:8080
 Auth:
@@ -322,8 +303,10 @@ Content-type: application/json
 Accept: application/json
 
 {
-   "type":"wood",
-   "number": 2
+   "type":"wood"
+   "number":2
+   "price":300,
+   "recieverID":7
 }
 \end{lstlisting}
 \subsubsection*{Returns}
@@ -345,10 +328,10 @@ HTTP 404 NOT FOUND
 
 
 \subsection{Sell Machine}
-向服务器发送: 出售的机器的id
+向服务器发送: 出售的机器的id, 售出的价格，和售出的一台机器的价格, 以及接受机器的人的ID
 \subsubsection*{Request}
 \begin{lstlisting}
-POST /api/client/property/id={id}
+POST /api/client/property/sellMachine/id={id}
 
 Host: localhost:8080
 Auth:
@@ -357,51 +340,13 @@ Accept: application/json
 
 {
 	"id": 9870
-	"left":3
+        "price":1000,
+        "recieverID":7
 }
 \end{lstlisting}
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
-
-{
-   "machine":
-    [
-        {
-            "id": "0073",
-            "type": "type1",
-            "left": 3
-        },
-        {
-            "id": "0793",
-            "type": "type1",
-            "left": 0
-        },
-        {
-            "id": "8765",
-            "type": "type2",
-            "left": 2
-        }
-    ],
-    "material":
-    [
-        {
-       	   "type": "wood",
-            "price": 10,
-            "number": 20,
-        },
-        {
-       	   "type": "brick",
-            "price": 20,
-            "number": 0,
-        },
-        {
-       	   "type": "cement",
-            "price": 80,
-            "number": 150,
-        }
-    ]
-}
 \end{lstlisting}
 \subsubsection*{Error}
 \begin{lstlisting}
@@ -428,26 +373,37 @@ Accept: application/json
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
+		[
+			{
+			"time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+			"target": "team1",
+			"action": "sell",
+			"content": "wood",
+			"price": 10,
+			"number": 2
+			"status": 1,（完成）
+			},
 
-[
-	{
-	    "time": "hh:MM:ss",
-	    "target": "team1",
-        "action": "sell",
-	    "content": {"material1": 1},
-        "price": "10",
-	    "status": "success",
-	},
-	{
-	    "time": "hh:MM:ss",
-	    "target": "team1",
-        "action": "buy",
-	    "content": {"material1": 1},
-        "price": "10",
-	    "status": "fail",
-	}
-]
-\end{lstlisting}
+			{
+			"time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+			"target": "team1",
+			 "action": "buy",
+			"content": "1234" (machine.id ==1234)
+			"price": 10,
+			"number": 1   	（只能是1）
+			"status": 0,	（正在进行）
+			},
+
+			{
+			"time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+			"target": "team1",
+			"action": "buy",
+			"content": "6666"    (machine.id ==1234)
+			"price": 10,
+			"number": 1   	（只能是1）
+			"status": -1,	（失败）
+			}
+		]\end{lstlisting}
 \subsubsection*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
@@ -782,14 +738,14 @@ HTTP 200 OK
     "trade_history":
     [
         {
-            "time": "hh:MM:ss",
+            "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "sell": "team_id1",
             "buy": "team_id2",
             "content": {"material1": 1},
             "price": "10"
         },
          {
-            "time": "hh:MM:ss",
+            "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "sell": "team_id1",
             "buy": "team_id2",
             "content": {"material2": 1},
@@ -968,7 +924,7 @@ Accept: application/json
 \begin{lstlisting}
 HTTP 200 OK
 {
-    "usersname": "admin",
+    "username": "admin",
     "token": "1283091828021803120",
 }
 
@@ -978,7 +934,7 @@ HTTP 200 OK
 \begin{lstlisting}
 HTTP 401 NOTAUTHORIZED
 {
-    "error": "Admin with userusername admin doesn\'t exist or password is wrong."
+    "error": "Admin with username admin doesn\'t exist or password is wrong."
 }
 \end{lstlisting}
 
