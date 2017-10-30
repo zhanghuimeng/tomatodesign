@@ -419,6 +419,8 @@ HTTP 404 NOT FOUND
 
 列出全部比赛。
 
+Status是"not_start", "auction", "trade", "transaction", "rest", "end"之一。
+
 \subsubsection*{Request}
 \begin{lstlisting}
 GET /api/admin/competition/getall
@@ -437,7 +439,7 @@ HTTP 200 OK
 	{
 	    "id": "competiton1_id",
 	    "username": "competition1",
-	    "status": "processing"
+	    "status": "auction"
 	},
 	{
 	    "id": "competiton2_id",
@@ -466,8 +468,8 @@ Accept: application/json
 
 {
     "username": "competition_username",
-    "round": "2",
-    "startWealth": "1000",
+    "round": 2,
+    "startWealth": 1000,
     "roundParameter":
     [
         {
@@ -548,7 +550,7 @@ Content-type: application/json
 Accept: application/json
 
 {
-	"status": "processing"
+	"status": "auction"
 }
 \end{lstlisting}
 
@@ -597,8 +599,8 @@ HTTP 200 OK
             "password": "password",
         }
     ]
-    "round": "1",
-    "startWealth": "1000",
+    "round": 1,
+    "startWealth": 1000,
     "roundParameter":
     [
         {
@@ -634,8 +636,8 @@ Content-type: application/json
 Accept: application/json
 
 {
-    "round": "2",
-    "startWealth": "1000",
+    "round": 2,
+    "startWealth": 1000,
     "round_parameter":
     [
         {
@@ -693,44 +695,44 @@ HTTP 200 OK
 {
     "id": "competition_id",
     "username": "competition_username",
-    "status": "not started",
-    "round": "2",
-    "present_round": "0",
-    "team_info":
+    "status": "not_start",
+    "round": 2,
+    "presentRound": 0,
+    "teamInfo":
     [
         {
             "id": "id1",
-            "wealth": "100",
-            "material": ["30", "40", "50"],
+            "wealth": 100,
+            "material": [30, 40, 50],
             "machine":
             [
                  {
                     "id": "machine1_id",
                     "type": "type1",
-                    "left": "3"
+                    "left": 3
                  },
                  {
                     "id": "machine2_id",
                     "type": "type2",
-                    "left": "2"
+                    "left": 2
                  }
             ]
         },
         {
             "id": "id2",
-            "wealth": "100",
-            "material": ["30", "40", "50"],
+            "wealth": 100,
+            "material": [30, 40, 50],
             "machine":
             [
                  {
                     "id": "machine1_id",
                     "type": "type1",
-                    "left": "3"
+                    "left": 3
                  },
                  {
                     "id": "machine2_id",
                     "type": "type2",
-                    "left": "2"
+                    "left": 2
                  }
             ]
         }
@@ -742,14 +744,14 @@ HTTP 200 OK
             "sell": "team_id1",
             "buy": "team_id2",
             "content": {"material1": 1},
-            "price": "10"
+            "price": 10
         },
          {
             "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "sell": "team_id1",
             "buy": "team_id2",
             "content": {"material2": 1},
-            "price": "20"
+            "price": 20
         }
     ]
 }
@@ -764,7 +766,7 @@ HTTP 404 NOT FOUND
 }
 \end{lstlisting}
 
-\subsection{Update Competition Information}
+\subsection{Record machine owner}
 向服务器发送对比赛的更新信息。增加机器、分配财产之类的。
 
 \subsubsection*{Request}
@@ -777,8 +779,8 @@ Content-type: application/json
 Accept: application/json
 
 {
-    "round": "2",
-    "present_round": "0",
+    "round": 2,
+    "present_round": 0,
     "team_info":
     [
         {
