@@ -419,7 +419,7 @@ HTTP 404 NOT FOUND
 
 列出全部比赛。
 
-Status是"not_start", "auction", "trade", "transaction", "rest", "end"之一。
+Status是"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"之一。
 
 \subsubsection*{Request}
 \begin{lstlisting}
@@ -538,7 +538,7 @@ HTTP 200 OK
 
 \subsection{Update Competition Status}
 
-更新比赛状态。
+需要进入下一环节时，管理员端会向服务器发送更新比赛状态的请求，服务器返回当前比赛信息以便管理员端更新到最新的比赛状态。
 
 \subsubsection*{Request}
 \begin{lstlisting}
@@ -551,12 +551,82 @@ Accept: application/json
 
 {
 	"status": "auction"
+	"round": 1 (-1 if round field is not nessasary)
 }
 \end{lstlisting}
 
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
+
+{
+    "id": "competition_id",
+    "username": "competition_username",
+    "status": "auction",
+    "round": 2,
+    "presentRound": 1,
+    "teamInfo":
+    [
+        {
+            "id": "id1",
+            "wealth": 100,
+            "material": [30, 40, 50],
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "type": "type1",
+                    "left": 3
+                 },
+                 {
+                    "id": "machine2_id",
+                    "type": "type2",
+                    "left": 2
+                 }
+            ]
+        },
+        {
+            "id": "id2",
+            "wealth": 100,
+            "material": [30, 40, 50],
+            "machine":
+            [
+                 {
+                    "id": "machine1_id",
+                    "type": "type1",
+                    "left": 3
+                 },
+                 {
+                    "id": "machine2_id",
+                    "type": "type2",
+                    "left": 2
+                 }
+            ]
+        }
+    ],
+    "trade_history":
+    [
+        {
+            "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "sell": "team_id1",
+            "buy": "team_id2",
+            "content": {"material1": 1},
+            "price": 10
+        },
+         {
+            "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "sell": "team_id1",
+            "buy": "team_id2",
+            "content": {"material2": 1},
+            "price": 20
+        }
+    ]
+}
+\end{lstlisting}
+
+如果是生产交易环节还需要添加
+\begin{lstlisting}
+"endTime": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 \end{lstlisting}
 
 \subsubsection*{Error}
@@ -564,6 +634,94 @@ HTTP 200 OK
 HTTP 404 NOT FOUND
 {
     "error":"Unable to update. Competition with id xxx not found"
+}
+\end{lstlisting}
+
+\subsection{Get Auction Machine}
+
+获得某场比赛某一轮拍卖机器的初始信息。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/admin/competition/auction/id={id}/round={round}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+[
+	{
+		"machineId": "machine1",
+		"type": "wood",
+		"startPrice": 200,
+	},
+	{
+		"machineId": "machine2",
+		"type": "brick",
+		"startPrice": 300,
+	},
+	{
+		"machineId": "machine3",
+		"type": "cement",
+		"startPrice": 400,
+	}
+]  
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error": "Competition with id xxx not found." (or Competition with id xxx does not have round xxx)
+}
+\end{lstlisting}
+
+\subsection{Record Auction Result}
+
+登记某场比赛某一轮的拍卖结果。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/admin/competition/record/id={id}/round={round}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+[
+	{
+		"machineId": "machine1",
+		"teamId": "team1",
+		"price": 2000,
+	},
+	{
+		"machineId": "machine2",
+		"teamId": "brick",
+		"price": 3000,
+	},
+	{
+		"machineId": "machine3",
+		"teamId": "cement",
+		"price": 4000,
+	}
+]  
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+{
+    "error": "Competition with id xxx not found." (or Competition with id xxx does not have round xxx)
 }
 \end{lstlisting}
 
