@@ -10,8 +10,6 @@
 \usepackage{pgfplots}
 \usepackage{fontspec}
 \usepackage{booktabs} % 表格上的不同横线
-\setmonofont[Mapping={}]{Consolas}	%英文引号之类的正常显示，相当于设置英文字体
-\setsansfont{Consolas} %设置英文字体 Monaco, Consolas,  Fantasque Sans Mono
 %\setmainfont{Consolas} %设置英文字体
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
@@ -62,10 +60,10 @@
 \newpage
 
 \begin{enumerate}
-	\item Client API Endpoints: 为特定用户提供相关信息。
-	\item Admin API Endpoints: 为管理员提供相关信息。
-	\item Administrative Endpoints: 登录和交易时使用。
-	\item Utility Endpoints: 询问系统相关信息。
+    \item Client API Endpoints: 为特定用户提供相关信息。
+    \item Admin API Endpoints: 为管理员提供相关信息。
+    \item Administrative Endpoints: 登录和交易时使用。
+    \item Utility Endpoints: 询问系统相关信息。
 \end{enumerate}
 
 \section{一些修改及说明}
@@ -82,8 +80,6 @@
 \subsection{Get Information}
 输入ID，获得与这一ID相关的用户的配置信息。用户有默认头像。如果比赛还没有开始，则rank为0。
 
-TO-DO：用户自己设置头像。
-TO-DO：三个用户同时登录。
 
 \subsubsection*{Request}
 \begin{lstlisting}
@@ -99,11 +95,52 @@ Accept: application/json
 HTTP 200 OK
 
 {
+   "memberList":
+    [
+    	"member1":"wangmz",
+	"member2":"songsh",
+	"member3":"wtf"
+    ],
     "username": "team1",
     "id":"3",
-    "avatar": "/9j/4QAYRXhpZg ....",
-    "gameStatus": "第2轮"
-    "rank": 1
+    "rank": 1,
+    
+    "gameStatus": "auction"（"not\_start", "auction\_not\_record", "auction\_recorded", "trade", "rest", "end"）
+    "round": 0/1/2/3   (第（round+1）轮)
+    "timeLeft":300(s)
+}
+\end{lstlisting}
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+
+
+
+
+
+\subsection{Get Avatar}
+获得用户头像
+
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/client/info/getAvatar/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+HashMap
+{
+	"fileoriginalsize", size;
+         "contenttype", contentType;
+         "base64", new String(Base64Utils.encode(IOUtils.toByteArray(stream)));
 }
 \end{lstlisting}
 \subsubsection*{Error}
@@ -141,16 +178,19 @@ HTTP 200 OK
             "id": "0073",
             "type": "type1",
             "left": 3
+            "lock":false
         },
         {
             "id": "0793",
             "type": "type1",
             "left": 0
+            "lock":true(正处于出售中的机器和材料 lock == true)
         },
         {
             "id": "8765",
             "type": "type2",
             "left": 2
+            "lock":false
         }
     ],
     "material":
@@ -159,16 +199,19 @@ HTTP 200 OK
             "type": "wood",
             "price": 10,
             "number": 20,
+            "lock":true
         },
         {
            "type": "brick",
             "price": 20,
             "number": 0,
+            "lock":false
         },
         {
           "type": "cement",
             "price": 80,
             "number": 150,
+            "lock":false
         }
     ]
 }
@@ -184,33 +227,26 @@ HTTP 404 NOT FOUND
 
 
 
-\subsection{Update Information}
-向服务器发送更改过的用户配置信息。
+\subsection{Update Avatar}
+向服务器发送用户更改过的头像。
+(其它队友获取新头像直接调用get Avatar)
 \subsubsection*{Request}
 \begin{lstlisting}
-PUT /api/client/info/id={id}
+POST /api/client/info/updateAvatar/id={id}
 
 Host: localhost:8080
-Auth:
-Content-type: application/json
-Accept: application/json
-
-{
-    "username": "team1",
-    "id":3,
-    "avatar": ".....",
-    "rank": 1,
-}
+MultipartHttpServletRequest request
 \end{lstlisting}
-subsubsection*{Returns}
+
+\subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
+HashMap
 {
-    "username": "team1",
-    "id":3,
-    "avatar": "/9j/4QAYRXhpZg ....",
-    "rank": 1
+	"fileoriginalsize", size;
+         "contenttype", contentType;
+         "base64", new String(Base64Utils.encode(IOUtils.toByteArray(stream)));
 }
 \end{lstlisting}
 \subsubsection*{Error}
@@ -220,28 +256,176 @@ HTTP 404 NOT FOUND
 
 
 
-
-
-\subsection{Produce}
-向服务器发送 需要生产啊的机器的ID和生产次数
+\subsection{Get All User}
+get 所有队伍，(除了发送消息的队伍)，用来发sell Request时进行选择
 \subsubsection*{Request}
 \begin{lstlisting}
-POST /api/client/property/produce/id={id}
+GET /api/client/getAllUser/id={id}
 
 Host: localhost:8080
 Auth:
 Content-type: application/json
 Accept: application/json
 
-{
-   "id":2,
-   "times":1,
-}
 \end{lstlisting}
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
+{
+    [
+    	{
+	    "teamId": 889,
+            "username": "dddd",
+        },
+        {
+        	   "teamId: 999,
+            "username": "ddfadf",
+        },
+    ]
+}
+\end{lstlisting}
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
+
+
+
+\subsection{交易：发出出售请求，监听出售结果}
+\begin{lstlisting}
+ MessageMapping: /api/client/property/sellerId={sellerId}/buyerId={buyerId}
+
+ SendTo: /api/client/property/buyerId={buyerId}
+ 
+ EndPoint:  http://127.0.0.1:8090/trade
+
+ Get JSon Pattern:（卖方发送）
+ {
+ 	"tradeId":tradeId,
+ 	"sellerId":sellerId,
+  	 "buyerId":buyerId,
+	 "buyer":"TOMATO"
+	 "typeOrMachineID":"9987"  ("wood" "cement" "brick" OR machineID)
+	 "price":300,
+	 "number":7
+	 "seller":"Rua"
+}
+Send JSon Pattern:（发给买方）
+ {
+ 	"tradeId": tradeId,
+ 	"sellerId": sellerId,
+  	 "buyerId": buyerId,
+	 "buyer": "TOMATO"
+	 "typeOrMachineID": "9987"  ("wood" "cement" "brick" OR machineID)
+	 "price": 300,
+	 "number": 7
+	 "seller": "Rua"
+ }
+
+\end{lstlisting}
+
+
+\subsection{交易结束 转发账单和现有资产}
+\begin{lstlisting}
+ MessageMapping: /api/client/tradeFinish/buyerId={buyerId}
+
+ SendTo: /api/client/tradeFinish/id={id}
+ 
+ EndPoint:  http://127.0.0.1:8090/tradeFinish
+ 
+ Get JSon Pattern:
+ {
+ 	"tradeId":tradeId,
+ 	"sellerId":sellerId,
+  	"buyerId":buyerId,
+	"buyer":"TOMATO"
+	"typeOrMachineID":"9987"  ("wood" "cement" "brick" OR machineID)
+	"price":300,
+	"number":7
+	"seller":"Rua"
+	 
+	 "isAccept":true
+}
+ 
+Send JSon Pattern:
+{
+   	"tradeId":tradeId,
+ 	"sellerId":sellerId,
+  	"buyerId":buyerId,
+	"buyer":"TOMATO"
+	"typeOrMachineID":"9987"  ("wood" "cement" "brick" OR machineID)
+	"price":300,
+	"number":7
+	"seller":"Rua"
+	 
+	 "isAccept":true
+   
+   
+   "wealth":1000,
+   "machine":
+    [
+        {
+            "id": 0073,
+            "type": "wood",
+            "left": 3
+            "lock":false
+        },
+        {
+            "id": 8765,
+            "type": "cement",
+            "left": 2
+            "lock":false
+        }
+    ],
+    "material":
+    [
+        {
+           "type": "wood",
+            "price": 10,
+            "number": 20,
+            "lock":false
+        },
+        {
+            "type": "brick",
+            "price": 20,
+            "number": 0,
+            "lock":false
+        },
+    ]
+}
+\end{lstlisting}
+转发给买方和卖方
+
+
+\subsection{监听比赛状态改变}
+\begin{lstlisting}
+ MessageMapping: /api/client/ListenCompetitionStatus/id=3
+ 
+ SendTo: /api/client/CompetitionStatus/id=3
+
+EndPoint:  http://127.0.0.1:8090/competitionStatus
+
+Send JSon Pattern:
+ {
+ 	"gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
+    	"round": 0/1/2/3   (第（round+1）轮)
+    	"timeLeft":227(s)
+
+ }
+\end{lstlisting}
+
+
+
+\subsection{监听produce后资产的改变}
+\begin{lstlisting}
+ MessageMapping: /api/client/ListenProperty/id=3
+ 
+ SendTo: /api/client/ListenProperty/receive/id=3
+
+EndPoint:  http://127.0.0.1:8090/listenProperty
+
+Send JSon Pattern:
 {
    "wealth":1000,
    "machine":
@@ -250,120 +434,60 @@ HTTP 200 OK
             "id": "0073",
             "type": "type1",
             "left": 3
+            "lock":false
         },
         {
             "id": "0793",
             "type": "type1",
             "left": 0
+            "lock":true
         },
         {
             "id": "8765",
             "type": "type2",
             "left": 2
+            "lock":false
         }
     ],
     "material":
     [
         {
-       	   "type": "wood",
+           "type": "wood",
             "price": 10,
             "number": 20,
+            "lock":false
         },
         {
-       	   "type": "brick",
+           "type": "brick",
             "price": 20,
             "number": 0,
+            "lock":false
         },
         {
-       	   "type": "cement",
+           "type": "cement",
             "price": 80,
             "number": 150,
+            "lock":false
         }
     ]
 }
-\end{lstlisting}
-\subsubsection*{Error}
-\begin{lstlisting}
-HTTP 404 NOT FOUND
-\end{lstlisting}
 
-
-
-
-
-\subsection{Sell Material}
-向服务器发送 出售的Material的种类，数量，和单位数量的价格，以及接受的人的ID
-\subsubsection*{Request}
-\begin{lstlisting}
-POST /api/client/property/sellMaterial/id={id}
-
-Host: localhost:8080
-Auth:
-Content-type: application/json
-Accept: application/json
-
+Get JSON Pattern:
 {
-   "type":"wood"
-   "number":2
-   "price":300,
-   "recieverID":7
+   "id":2,
+   "times":1,
+}
 }
 \end{lstlisting}
-\subsubsection*{Returns}
-\begin{lstlisting}
-HTTP 200 OK
-\end{lstlisting}
-
-\subsubsection*{Error}
-\begin{lstlisting}
-HTTP 404 NOT FOUND
-\end{lstlisting}
 
 
 
 
-
-
-
-
-
-\subsection{Sell Machine}
-向服务器发送: 出售的机器的id, 售出的价格，和售出的一台机器的价格, 以及接受机器的人的ID
+\subsection{Get Trade History}
+交易历史信息。在发订单的时候客户端手动更新History。
 \subsubsection*{Request}
 \begin{lstlisting}
-POST /api/client/property/sellMachine/id={id}
-
-Host: localhost:8080
-Auth:
-Content-type: application/json
-Accept: application/json
-
-{
-	"id": 9870
-        "price":1000,
-        "recieverID":7
-}
-\end{lstlisting}
-\subsubsection*{Returns}
-\begin{lstlisting}
-HTTP 200 OK
-\end{lstlisting}
-\subsubsection*{Error}
-\begin{lstlisting}
-HTTP 404 NOT FOUND
-\end{lstlisting}
-
-
-
-
-
-
-
-\subsection{Get History}
-获取与某一用户相关的历史信息。在发订单的时候客户端手动更新History。
-\subsubsection*{Request}
-\begin{lstlisting}
-GET /api/client/history/id={id}
+GET /api/client/tradehHistory/id={id}
 
 Host: localhost:8080
 Auth:
@@ -373,42 +497,87 @@ Accept: application/json
 \subsubsection*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
-		[
-			{
-			"time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-			"target": "team1",
-			"action": "sell",
-			"content": "wood",
-			"price": 10,
-			"number": 2
-			"status": 1,（完成）
-			},
+        [
+            {
+            "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "target": "team1",
+            "action": "sell",
+            "content": "wood",
+            "price": 10,
+            "number": 2
+            "status": 1,（完成）
+            },
 
-			{
-			"time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-			"target": "team1",
-			 "action": "buy",
-			"content": "1234" (machine.id ==1234)
-			"price": 10,
-			"number": 1   	（只能是1）
-			"status": 0,	（正在进行）
-			},
+            {
+            "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "target": "team1",
+             "action": "buy",
+            "content": "1234" (machine.id ==1234)
+            "price": 10,
+            "number": 1     （只能是1）
+            "status": 0,    （正在进行）
+            },
 
-			{
-			"time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-			"target": "team1",
-			"action": "buy",
-			"content": "6666"    (machine.id ==1234)
-			"price": 10,
-			"number": 1   	（只能是1）
-			"status": -1,	（失败）
-			}
-		]\end{lstlisting}
+            {
+            "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "target": "team1",
+            "action": "buy",
+            "content": "6666"    (machine.id ==1234)
+            "price": 10,
+            "number": 1     （只能是1）
+            "status": -1,   （失败）
+            }
+        ]\end{lstlisting}
 \subsubsection*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
+
+
+
+
+\subsection{Get Produce History}
+生产历史信息。
+\subsubsection*{Request}
+\begin{lstlisting}
+GET /api/client/produceHistory/id={id}
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+\end{lstlisting}
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+        [
+            {
+            "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "machineId":9987
+            "content": "brick",
+            "price": 10,
+            "number": 2
+            },
+            {
+            "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "machineId":3457
+            "content": "wood",
+            "price": 10,
+            "number": 2
+            },
+            {
+            "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "machineId":5777
+            "content": "cement",
+            "price": 10,
+            "number": 2
+            },
+        ]\end{lstlisting}
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 404 NOT FOUND
+\end{lstlisting}
 
 
 
@@ -436,16 +605,16 @@ Accept: application/json
 HTTP 200 OK
 
 [
-	{
-	    "id": "competiton1_id",
-	    "username": "competition1",
-	    "status": "auction"
-	},
-	{
-	    "id": "competiton2_id",
-	    "username": "competition2",
-	    "status": "end"
-	}
+    {
+        "id": "competiton1_id",
+        "username": "competition1",
+        "status": "auction"
+    },
+    {
+        "id": "competiton2_id",
+        "username": "competition2",
+        "status": "end"
+    }
 ]
 \end{lstlisting}
 
@@ -521,11 +690,11 @@ Accept: application/json
 \begin{lstlisting}
 HTTP 200 OK
 [
-	{
-	    "id": "competiton2_id",
-	    "username": "competition2",
-	    "status": "end"
-	}
+    {
+        "id": "competiton2_id",
+        "username": "competition2",
+        "status": "end"
+    }
 ]
 \end{lstlisting}
 
@@ -550,8 +719,8 @@ Content-type: application/json
 Accept: application/json
 
 {
-	"status": "auction"
-	"round": 1 (-1 if round field is not nessasary)
+    "status": "auction"
+    "round": 1 (-1 if round field is not nessasary)
 }
 \end{lstlisting}
 
@@ -655,21 +824,21 @@ Accept: application/json
 \begin{lstlisting}
 HTTP 200 OK
 [
-	{
-		"machineId": "machine1",
-		"type": "wood",
-		"startPrice": 200,
-	},
-	{
-		"machineId": "machine2",
-		"type": "brick",
-		"startPrice": 300,
-	},
-	{
-		"machineId": "machine3",
-		"type": "cement",
-		"startPrice": 400,
-	}
+    {
+        "machineId": "machine1",
+        "type": "wood",
+        "startPrice": 200,
+    },
+    {
+        "machineId": "machine2",
+        "type": "brick",
+        "startPrice": 300,
+    },
+    {
+        "machineId": "machine3",
+        "type": "cement",
+        "startPrice": 400,
+    }
 ]
 \end{lstlisting}
 
@@ -699,21 +868,21 @@ Accept: application/json
 \begin{lstlisting}
 HTTP 200 OK
 [
-	{
-		"machineId": "machine1",
-		"teamId": "team1",
-		"price": 2000,
-	},
-	{
-		"machineId": "machine2",
-		"teamId": "brick",
-		"price": 3000,
-	},
-	{
-		"machineId": "machine3",
-		"teamId": "cement",
-		"price": 4000,
-	}
+    {
+        "machineId": "machine1",
+        "teamId": "team1",
+        "price": 2000,
+    },
+    {
+        "machineId": "machine2",
+        "teamId": "brick",
+        "price": 3000,
+    },
+    {
+        "machineId": "machine3",
+        "teamId": "cement",
+        "price": 4000,
+    }
 ]
 \end{lstlisting}
 
