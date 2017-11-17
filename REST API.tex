@@ -97,15 +97,15 @@ HTTP 200 OK
 {
    "memberList":
     [
-    	"member1":"wangmz",
-	"member2":"songsh",
-	"member3":"wtf"
+        "member1":"wangmz",
+    	"member2":"songsh",
+    	"member3":"wtf"
     ],
     "username": "team1",
-    "id":"3",
+    "id":3,
     "rank": 1,
     
-    "gameStatus": "auction"（"not\_start", "auction\_not\_record", "auction\_recorded", "trade", "rest", "end"）
+    "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
     "round": 0/1/2/3   (第（round+1）轮)
     "timeLeft":300(s)
 }
@@ -138,7 +138,7 @@ HTTP 200 OK
 
 HashMap
 {
-	"fileoriginalsize", size;
+    "fileoriginalsize", size;
          "contenttype", contentType;
          "base64", new String(Base64Utils.encode(IOUtils.toByteArray(stream)));
 }
@@ -175,20 +175,20 @@ HTTP 200 OK
    "machine":
     [
         {
-            "id": "0073",
-            "type": "type1",
+            "id": 0073,
+            "type": "Cement",
             "left": 3
             "lock":false
         },
         {
-            "id": "0793",
-            "type": "type1",
+            "id": 0793,
+            "type": "Brick",
             "left": 0
             "lock":true(正处于出售中的机器和材料 lock == true)
         },
         {
-            "id": "8765",
-            "type": "type2",
+            "id": 8765,
+            "type": "Wood",
             "left": 2
             "lock":false
         }
@@ -196,19 +196,19 @@ HTTP 200 OK
     "material":
     [
         {
-            "type": "wood",
+            "type": "Wood",
             "price": 10,
             "number": 20,
             "lock":true
         },
         {
-           "type": "brick",
+           "type": "Brick",
             "price": 20,
             "number": 0,
             "lock":false
         },
         {
-          "type": "cement",
+          "type": "Cement",
             "price": 80,
             "number": 150,
             "lock":false
@@ -244,7 +244,7 @@ HTTP 200 OK
 
 HashMap
 {
-	"fileoriginalsize", size;
+    "fileoriginalsize", size;
          "contenttype", contentType;
          "base64", new String(Base64Utils.encode(IOUtils.toByteArray(stream)));
 }
@@ -274,12 +274,12 @@ HTTP 200 OK
 
 {
     [
-    	{
-	    "teamId": 889,
+        {
+        "teamId": 889,
             "username": "dddd",
         },
         {
-        	   "teamId: 999,
+               "teamId": 999,
             "username": "ddfadf",
         },
     ]
@@ -292,7 +292,7 @@ HTTP 404 NOT FOUND
 
 
 
-\subsection{交易：发出出售请求，监听出售结果}
+\subsection{交易：发出出售请求，buyer监听}
 \begin{lstlisting}
  MessageMapping: /api/client/property/sellerId={sellerId}/buyerId={buyerId}
 
@@ -302,116 +302,189 @@ HTTP 404 NOT FOUND
 
  Get JSon Pattern:（卖方发送）
  {
- 	"tradeId":tradeId,
- 	"sellerId":sellerId,
-  	 "buyerId":buyerId,
-	 "buyer":"TOMATO"
-	 "typeOrMachineID":"9987"  ("wood" "cement" "brick" OR machineID)
-	 "price":300,
-	 "number":7
-	 "seller":"Rua"
+    "tradeId": '',
+    "sellerId":sellerId,
+     "buyerId":buyerId,
+     "buyer":"TOMATO"
+     "typeOrMachineID":"9987"  ("Wood" "Cement" "Brick" OR machineID)
+     "price":300,
+     "number":7
+     "seller":"Rua"
 }
 Send JSon Pattern:（发给买方）
  {
- 	"tradeId": tradeId,
- 	"sellerId": sellerId,
-  	 "buyerId": buyerId,
-	 "buyer": "TOMATO"
-	 "typeOrMachineID": "9987"  ("wood" "cement" "brick" OR machineID)
-	 "price": 300,
-	 "number": 7
-	 "seller": "Rua"
+    "tradeId": tradeId,
+    "sellerId": sellerId,
+     "buyerId": buyerId,
+     "buyer": "TOMATO"
+     "typeOrMachineID": "9987"  ("Wood" "Cement" "Brick" OR machineID)
+     "price": 300,
+     "number": 7
+     "seller": "Rua"
  }
 
 \end{lstlisting}
 
 
-\subsection{交易结束 转发账单和现有资产}
-\begin{lstlisting}
- MessageMapping: /api/client/tradeFinish/buyerId={buyerId}
 
- SendTo: /api/client/tradeFinish/id={id}
+
+
+
+\subsection{交易结束 给卖家转发账单和现有资产}
+\begin{lstlisting}
+ MessageMapping: /api/client/tradeFinish/sellerId={sellerId}
+
+ SendTo: /api/client/tradeFinish/id={sellerId}
  
  EndPoint:  http://127.0.0.1:8090/tradeFinish
  
  Get JSon Pattern:
  {
- 	"tradeId":tradeId,
- 	"sellerId":sellerId,
-  	"buyerId":buyerId,
-	"buyer":"TOMATO"
-	"typeOrMachineID":"9987"  ("wood" "cement" "brick" OR machineID)
-	"price":300,
-	"number":7
-	"seller":"Rua"
-	 
-	 "isAccept":true
+    "tradeId":tradeId,
+    "sellerId":sellerId,
+    "buyerId":buyerId,
+    "buyer":"TOMATO"
+    "typeOrMachineID":"9987"  ("Wood" "Cement" "Brick" OR machineID)
+    "price":300,
+    "number":7
+    "seller":"Rua"
+     
+     "isAccept":true
 }
  
 Send JSon Pattern:
 {
-   	"tradeId":tradeId,
- 	"sellerId":sellerId,
-  	"buyerId":buyerId,
-	"buyer":"TOMATO"
-	"typeOrMachineID":"9987"  ("wood" "cement" "brick" OR machineID)
-	"price":300,
-	"number":7
-	"seller":"Rua"
-	 
-	 "isAccept":true
+    "reply":
+    {
+    "tradeId":tradeId,
+    "sellerId":sellerId,
+    "buyerId":buyerId,
+    "buyer":"TOMATO"
+    "typeOrMachineID":"9987"  ("Wood" "Cement" "Brick" OR machineID)
+    "price":300,
+    "number":7
+    "seller":"Rua"
+    
+    "isAccept":true
+     }
+     
    
-   
-   "wealth":1000,
-   "machine":
-    [
+   "propertyList":
+   {
+   	"wealth":1000,
+   	"machineList":
+    	[
         {
             "id": 0073,
-            "type": "wood",
+            "type": "Wood",
             "left": 3
             "lock":false
         },
+        ],
+    	"materialList":
+    	[
         {
-            "id": 8765,
-            "type": "cement",
-            "left": 2
-            "lock":false
-        }
-    ],
-    "material":
-    [
-        {
-           "type": "wood",
-            "price": 10,
-            "number": 20,
-            "lock":false
-        },
-        {
-            "type": "brick",
+            "type": "Brick",
             "price": 20,
             "number": 0,
             "lock":false
         },
-    ]
+    	]
+    }
 }
 \end{lstlisting}
-转发给买方和卖方
+
+
+
+
+
+
+\subsection{交易结束 给队友转发账单和现有资产}
+\begin{lstlisting}
+ MessageMapping: /api/client/tradeFinish/buyerId={buyerId}
+
+ SendTo: /api/client/tradeFinish/id={buyerId}
+ 
+ EndPoint:  http://127.0.0.1:8090/tradeFinish
+ 
+ Get JSon Pattern:
+ {
+    "tradeId":tradeId,
+    "sellerId":sellerId,
+    "buyerId":buyerId,
+    "buyer":"TOMATO"
+    "typeOrMachineID":"9987"  ("Wood" "Cement" "Brick" OR machineID)
+    "price":300,
+    "number":7
+    "seller":"Rua"
+     
+     "isAccept":true
+}
+ 
+Send JSon Pattern:
+{
+    "reply":
+    {
+    "tradeId":tradeId,
+    "sellerId":sellerId,
+    "buyerId":buyerId,
+    "buyer":"TOMATO"
+    "typeOrMachineID":"9987"  ("Wood" "Cement" "Brick" OR machineID)
+    "price":300,
+    "number":7
+    "seller":"Rua"
+    
+    "isAccept":true
+     }
+     
+   
+   "propertyList":
+   {
+   	"wealth":1000,
+   	"machineList":
+    	[
+        {
+            "id": 0073,
+            "type": "Wood",
+            "left": 3
+            "lock":false
+        },
+    	],
+    	"materialList":
+    	[
+        {
+            "type": "Brick",
+            "price": 20,
+            "number": 0,
+            "lock":false
+        },
+    	]
+    }
+}
+\end{lstlisting}
+
 
 
 \subsection{监听比赛状态改变}
 \begin{lstlisting}
- MessageMapping: /api/client/ListenCompetitionStatus/id=3
+ MessageMapping: /api/admin/competition/status/id={id}
  
- SendTo: /api/client/CompetitionStatus/id=3
+ SendTo: /api/client/CompetitionStatus/id={id}
 
 EndPoint:  http://127.0.0.1:8090/competitionStatus
 
 Send JSon Pattern:
  {
- 	"gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
-    	"round": 0/1/2/3   (第（round+1）轮)
-    	"timeLeft":227(s)
+    	"gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
+        "round": 0/1/2/3   (第（round+1）轮)
+        "timeLeft":227(s)
 
+ }
+
+ Get JSON Pattern:
+ {
+    "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", 
+    "round": 0/1/2/3   (从0开始)
  }
 \end{lstlisting}
 
@@ -431,20 +504,20 @@ Send JSon Pattern:
    "machine":
     [
         {
-            "id": "0073",
-            "type": "type1",
+            "id": 0073,
+            "type": "Wood",
             "left": 3
             "lock":false
         },
         {
-            "id": "0793",
-            "type": "type1",
+            "id": 0793,
+            "type": "Brick",
             "left": 0
             "lock":true
         },
         {
-            "id": "8765",
-            "type": "type2",
+            "id": 8765,
+            "type": "Cement",
             "left": 2
             "lock":false
         }
@@ -452,19 +525,19 @@ Send JSon Pattern:
     "material":
     [
         {
-           "type": "wood",
+           "type": "Wood",
             "price": 10,
             "number": 20,
             "lock":false
         },
         {
-           "type": "brick",
+           "type": "Brick",
             "price": 20,
             "number": 0,
             "lock":false
         },
         {
-           "type": "cement",
+           "type": "Cement",
             "price": 80,
             "number": 150,
             "lock":false
@@ -506,6 +579,8 @@ HTTP 200 OK
             "price": 10,
             "number": 2
             "status": 1,（完成）
+            "tradeId":44,
+            "buyerId":9
             },
 
             {
@@ -516,6 +591,8 @@ HTTP 200 OK
             "price": 10,
             "number": 1     （只能是1）
             "status": 0,    （正在进行）
+            "tradeId":44,
+            "buyerId":9
             },
 
             {
@@ -526,6 +603,8 @@ HTTP 200 OK
             "price": 10,
             "number": 1     （只能是1）
             "status": -1,   （失败）
+            "tradeId":44,
+            "buyerId":9,
             }
         ]\end{lstlisting}
 \subsubsection*{Error}
@@ -555,21 +634,21 @@ HTTP 200 OK
             {
             "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "machineId":9987
-            "content": "brick",
+            "content": "Brick",
             "price": 10,
             "number": 2
             },
             {
             "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "machineId":3457
-            "content": "wood",
+            "content": "Wood",
             "price": 10,
             "number": 2
             },
             {
             "time":   "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "machineId":5777
-            "content": "cement",
+            "content": "Cement",
             "price": 10,
             "number": 2
             },
@@ -578,6 +657,119 @@ HTTP 200 OK
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
+
+
+
+
+\subsection{撤销，卖方监听}
+\begin{lstlisting}
+ MessageMapping: /api/client/undo/sendToSeller/sellerId={sellerId}/buyerId={buyerId}
+
+ SendTo: /api/client/receiveUndo/id={sellerId}
+ 
+ EndPoint:  http://127.0.0.1:8090/undo
+
+ Get JSon Pattern:（卖方发送）
+ {
+    "tradeId": 77,
+ }
+Send JSon Pattern:（发给卖方）
+ {
+    "request":
+    {
+    "tradeId":77,
+    "sellerId":sellerId,
+    "buyerId":buyerId,
+    "buyer":"TOMATO"
+    "typeOrMachineID":"9987"  ("Wood" "Cement" "Brick" OR machineID)
+    "price":300,
+    "number":7
+    "seller":"Rua"
+     }
+     
+   "propertyList":
+   {
+   	"wealth":1000,
+   	"machineList":
+    	[
+        {
+            "id": 0073,
+            "type": "Wood",
+            "left": 3
+            "lock":false
+        },
+    	],
+    	"materialList":
+    	[
+        {
+            "type": "Brick",
+            "price": 20,
+            "number": 0,
+            "lock":false
+        },
+    	]
+    }
+ }
+
+\end{lstlisting}
+
+
+
+
+
+\subsection{撤销，买方监听}
+\begin{lstlisting}
+ MessageMapping: /api/client/undo/sendToBuyer/sellerId={sellerId}/buyerId={buyerId}
+
+ SendTo: /api/client/receiveUndo/id={buyerId}
+ 
+ EndPoint:  http://127.0.0.1:8090/undo
+
+ Get JSon Pattern:（卖方发送）
+ {
+    "tradeId": 77,
+ }
+Send JSon Pattern:（发给买方）
+ {
+    "request":
+    {
+    "tradeId":77,
+    "sellerId":sellerId,
+    "buyerId":buyerId,
+    "buyer":"TOMATO"
+    "typeOrMachineID":"9987"  ("Wood" "Cement" "Brick" OR machineID)
+    "price":300,
+    "number":7
+    "seller":"Rua"
+     }
+     
+   "propertyList":
+   {
+   	"wealth":1000,
+   	"machineList":
+    	[
+        {
+            "id": 0073,
+            "type": "Wood",
+            "left": 3
+            "lock":false
+        },
+    	],
+    	"materialList":
+    	[
+        {
+            "type": "Brick",
+            "price": 20,
+            "number": 0,
+            "lock":false
+        },
+    	]
+    }
+ }
+
+\end{lstlisting}
+
+
 
 
 
@@ -639,6 +831,23 @@ Accept: application/json
     "username": "competition_username",
     "round": 2,
     "startWealth": 1000,
+
+    "teamNum": 2,
+    "participantNum": 3,
+    "team":
+    [
+        {
+            "username": "team1",
+            "participant": ["mem11", "mem12", "mem13"],
+            "password": "111111",
+        },
+        {
+            "username": "team2",
+            "participant": ["mem21", "mem22", "mem23"],
+            "password": "222222",
+        }
+    ]
+
     "roundParameter":
     [
         {
@@ -709,93 +918,26 @@ HTTP 200 OK
 
 需要进入下一环节时，管理员端会向服务器发送更新比赛状态的请求，服务器返回当前比赛信息以便管理员端更新到最新的比赛状态。
 
-\subsubsection*{Request}
+\subsubsection*{Web Socket}
 \begin{lstlisting}
-POST /api/admin/competition/status/id={id}
+MessageMapping: /api/admin/status/update/id=3
+ 
+SendTo: /api/admin/status/id=3
 
-Host: localhost:8080
-Auth:
-Content-type: application/json
-Accept: application/json
+EndPoint:  http://127.0.0.1:8090/competitionStatus
 
+Send JSON Pattern:
 {
-    "status": "auction"
-    "round": 1 (-1 if round field is not nessasary)
-}
-\end{lstlisting}
+    "status": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
+    "round": 0/1/2/3 
+    "timeLeft":227(s)
+ }
 
-\subsubsection*{Returns}
-\begin{lstlisting}
-HTTP 200 OK
-
+Get JSON Pattern: 
 {
-    "id": "competition_id",
-    "username": "competition_username",
-    "status": "auction",
-    "round": 2,
-    "presentRound": 1,
-    "teamInfo":
-    [
-        {
-            "id": "id1",
-            "wealth": 100,
-            "material": [30, 40, 50],
-            "machine":
-            [
-                 {
-                    "id": "machine1_id",
-                    "type": "type1",
-                    "left": 3
-                 },
-                 {
-                    "id": "machine2_id",
-                    "type": "type2",
-                    "left": 2
-                 }
-            ]
-        },
-        {
-            "id": "id2",
-            "wealth": 100,
-            "material": [30, 40, 50],
-            "machine":
-            [
-                 {
-                    "id": "machine1_id",
-                    "type": "type1",
-                    "left": 3
-                 },
-                 {
-                    "id": "machine2_id",
-                    "type": "type2",
-                    "left": 2
-                 }
-            ]
-        }
-    ],
-    "trade_history":
-    [
-        {
-            "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            "sell": "team_id1",
-            "buy": "team_id2",
-            "content": {"material1": 1},
-            "price": 10
-        },
-         {
-            "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            "sell": "team_id1",
-            "buy": "team_id2",
-            "content": {"material2": 1},
-            "price": 20
-        }
-    ]
+    "status": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
+    "round": 0/1/2/3
 }
-\end{lstlisting}
-
-如果是生产交易环节还需要添加
-\begin{lstlisting}
-"endTime": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 \end{lstlisting}
 
 \subsubsection*{Error}
@@ -826,17 +968,17 @@ HTTP 200 OK
 [
     {
         "machineId": "machine1",
-        "type": "wood",
+        "type": "Wood",
         "startPrice": 200,
     },
     {
         "machineId": "machine2",
-        "type": "brick",
+        "type": "Brick",
         "startPrice": 300,
     },
     {
         "machineId": "machine3",
-        "type": "cement",
+        "type": "Cement",
         "startPrice": 400,
     }
 ]
@@ -1070,20 +1212,21 @@ HTTP 200 OK
             "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "sell": "team_id1",
             "buy": "team_id2",
-            "content": {"material1": 1},
+            "content": {"wood": 1},
             "price": 10
         },
          {
             "time": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             "sell": "team_id1",
             "buy": "team_id2",
-            "content": {"material2": 1},
+            "content": {"machine_wood": 1},
             "price": 20
         }
     ]
 }
 
 \end{lstlisting}
+content中是wood，brick，cement，machine_wood，machine_brick，machine_cement中的一个。
 
 \subsubsection*{Error}
 \begin{lstlisting}
@@ -1117,11 +1260,11 @@ Accept: application/json
             [
                  {
                     "id": "machine1_id",
-                    "left": "3"
+                    "left": 3
                  },
                  {
                     "id": "machine2_id",
-                    "left": "2"
+                    "left": 2
                  }
             ]
         },
@@ -1132,11 +1275,11 @@ Accept: application/json
             [
                  {
                     "id": "machine1_id",
-                    "left": "3"
+                    "left": 3
                  },
                  {
                     "id": "machine2_id",
-                    "left": "2"
+                    "left": 2
                  }
             ]
         }
@@ -1157,37 +1300,37 @@ HTTP 200 OK
     [
         {
             "id": "id1",
-            "wealth": "100",
-            "material": ["30", "40", "50"],
+            "wealth": 100,
+            "material": [30, 40, 50],
             "machine":
             [
                  {
                     "id": "machine1_id",
                     "type": "type1",
-                    "left": "3"
+                    "left": 3
                  },
                  {
                     "id": "machine2_id",
                     "type": "type2",
-                    "left": "2"
+                    "left": 2
                  }
             ]
         },
         {
             "id": "id2",
-            "wealth": "100",
-            "material": ["30", "40", "50"],
+            "wealth": 100,
+            "material": [30, 40, 50],
             "machine":
             [
                  {
                     "id": "machine1_id",
                     "type": "type1",
-                    "left": "3"
+                    "left": 3
                  },
                  {
                     "id": "machine2_id",
                     "type": "type2",
-                    "left": "2"
+                    "left": 2
                  }
             ]
         }
@@ -1198,20 +1341,21 @@ HTTP 200 OK
             "time": "hh:MM:ss",
             "sell": "team_id1",
             "buy": "team_id2",
-            "content": {"material1": 1},
-            "price": "10"
+            "content": {"wood": 1},
+            "price": 10
         },
          {
             "time": "hh:MM:ss",
             "sell": "team_id1",
             "buy": "team_id2",
-            "content": {"material2": 1},
-            "price": "20"
+            "content": {"machine_wood": 1},
+            "price": 20
         }
     ]
 }
 
 \end{lstlisting}
+content中是wood，brick，cement，machine_wood，machine_brick，machine_cement中的一个。
 
 \subsubsection*{Error}
 \begin{lstlisting}
@@ -1267,6 +1411,39 @@ HTTP 401 NOTAUTHORIZED
 }
 \end{lstlisting}
 
+\subsection{Change Admin Password}
+更改管理员密码。
+
+\subsubsection*{Request}
+\begin{lstlisting}
+POST /api/admin/update
+
+Host: localhost:8080
+Auth:
+Content-type: application/json
+Accept: application/json
+
+{
+    "username": "admin",
+    "prePassword": "admin",
+    "newPassword": "newpwd",
+}
+\end{lstlisting}
+
+\subsubsection*{Returns}
+\begin{lstlisting}
+HTTP 200 OK
+
+\end{lstlisting}
+
+\subsubsection*{Error}
+\begin{lstlisting}
+HTTP 401 NOTAUTHORIZED
+{
+    "error": "Wrong password of admin."
+}
+\end{lstlisting}
+
 \subsection{Login Client}
 用户登录。
 
@@ -1281,7 +1458,6 @@ Accept: application/json
 
 {
     "username": "client",
-    "id": "3",
     "password": "client",
 }
 \end{lstlisting}
@@ -1291,6 +1467,7 @@ Accept: application/json
 HTTP 200 OK
 {
     "username": "client",
+     "id": "3",
     "token": "1283091828021803120",
 }
 
