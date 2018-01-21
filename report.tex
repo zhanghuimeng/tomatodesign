@@ -64,15 +64,17 @@
 				\paragraph{设计思想}
 					本系统顶层核心要处理的两个问题是对于HttpRequest的处理和对于websocket的处理，而底层核心要处理的问题是数据库的维护等问题。如果直接从头开始开发一套框架，则要实现的内容可能比我们当前写的多得多。所以我们后台根据这个需求找到了Spring Boot框架。Spring Boot 很好地通过了Annotations来实现我们需要的对于前端web端的响应，也实现了我们需要的和数据库的连接、并发的响应等等。本系统并不需要很高深的算法，但是对逻辑上的要求十分的多和细致。
 				\paragraph{基本处理流程}
-					%unfinished 需要画图
-				\paragraph{系统体系结构}
-					%unfinished 需要画图
-				\paragraph{功能需求与系统配置项的关系}
-					%unfinished 需要画图
-			\subsubsection{执行概念}
-				%unfinished 需要画图
-			\subsubsection{接口设计}
-				\includegraphics[scale = .3]{fig/架构图.png}
+                    下面以用户登录为例来讲解后台对于HttpRequest的处理流程。
+
+                    \includegraphics[scale = .3]{fig/基本数据.png}
+
+                    当前端发来HttpRequest或websocket的时候，Controller首先会提取出发来的数据内容，然后将根据业务逻辑处理数据，在处理数据的过程中，可能需要访问数据库中已有的数据，如在这个情况下需要对拍数据库中的账号和密码。也有可能需要修改后台数据库，但是图中的例子不需要。在处理完数据之后，Controller会把数据重新包装，然后根据API文档的说明传回前端。整个数据处理的过程可以理解为从前端发来数据，然后Controller向数据库query数据，然后处理完数据之后又save到数据库中，最后返回给前端。
+                \paragraph{系统体系结构}
+                    \includegraphics[scale = .3]{fig/架构图.png}
+
+                    如图，前端的功能是响应用户的操作，并把用户操作的数据根据API文档中的要求进行包装，作为HttpRequest或websocket发往后端，后端Controller对于包装好的数据解码，并query Service，和数据库交互，完成数据的处理，并完成数据库的更新。最后将HttpRequest返回给前端或将websocket转发。
+            \subsubsection{接口设计}
+                \includegraphics[scale = .3]{fig/架构图.png}
 		\subsection{系统出错处理设计}
 			系统出错后，后台数据库的内容不会被清空，并且我们是在处理request流程中对数据库是实时更新的，宕机之后数据库的内容还是会保留，当下次启动服务器的时候它还能从原数据库中获得原来的数据，并根据这些数据进行处理。
 
