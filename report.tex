@@ -1602,6 +1602,7 @@ d)缩写名或同义名；
 
 \subsubsection{物理设计}
 根据上述实体类设计，Hibernate一共生成了28张表，下面列出每张表的每一列：
+\small{
 \begin{enumerate}
   \item admin
     \begin{description}
@@ -1613,15 +1614,64 @@ d)缩写名或同义名；
       \item [username] VARCHAR(255)
     \end{description}
   \item admin\_competition\_list
+    \begin{description}
+      \item[admin\_admin\_id] BIGINT(20), FOREIGN KEY(admin.admin\_id)
+      \item[competition\_list\_competition\_id] BIGINT(20), UNIQUE, FOREIGN KEY(competition\_id.competition\_id)
+    \end{description}
   \item competition\$round\_machine\_auction\_price\_map
+    \begin{description}
+      \item[competition\$round\_round\_id] BIGINT(20), PRIMARY KEY, FOREIGN KEY(round.round\_id)
+      \item[machine\_auction\_pricemap] INT(11)
+      \item[machine\_auction\_price\_map\_key] BIGINT(20), PRIMARY KEY, FOREIGN KEY(machine.machine\_id)
+    \end{description}
   \item competition\$round\_machine\_number\_map
+    \begin{description}
+      \item[competition\$round\_round\_id] BIGINT(20), PRIMARY KEY, FOREIGN KEY(round.round\_id)
+      \item[machine\_number\_map] INT(11)
+      \item[machine\_number\_map\_key] INT(11), PRIMARY KEY
+    \end{description}
   \item competition\$round\_machine\_start\_price\_map
+    \begin{description}
+      \item[competition\$round\_round\_id] BIGINT(20), PRIMARY KEY, FOREIGN KEY(round.round\_id)
+      \item[machine\_start\_price\_map] INT(11)
+      \item[machine\_start\_price\_map\_key] INT(11), PRIMARY KEY
+    \end{description}
   \item competition\$round\_material\_per\_house
+    \begin{description}
+      \item[competition\$round\_round\_id] BIGINT(20), PRIMARY KEY, FOREIGN KEY(round.round\_id)
+      \item[material\_per\_house] INT(11)
+      \item[material\_per\_house\_key] INT(11), PRIMARY KEY
+    \end{description}
   \item competition\$round\_material\_price\_map
+    \begin{description}
+      \item[competition\$round\_round\_id] BIGINT(20), PRIMARY KEY, FOREIGN KEY(round.round\_id)
+      \item[material\_price\_map] INT(11)
+      \item[material\_price\_map\_key] INT(11), PRIMARY KEY
+    \end{description}
   \item competition\_id
+    \begin{description}
+      \item[competition\_id] BIGINT(20), AUTO INCREMENT, PRIMARY KEY
+      \item[initial] INT(11)
+      \item[name] VARCHAR(255)
+      \item[present\_round] INT(11)
+      \item[round] INT(11)
+      \item[status] INT(11)
+    \end{description}
   \item competition\_id\_produce\_list
+    \begin{description}
+      \item[competition\_competition\_id] BIGINT(20), UNIQUE, FOREIGN KEY(competition\_id.competition\_id)
+      \item[produce\_list\_produce\_id] BIGINT(20), UNIQUE, FOREIGN KEY(produce.produce\_id)
+    \end{description}
   \item competition\_id\_round\_list
+    \begin{description}
+      \item[competition\_competition\_id] BIGINT(20), UNIQUE, FOREIGN KEY(competition\_id.competition\_id)
+      \item[round\_list\_round\_id] BIGINT(20), UNIQUE, FOREIGN KEY(round.round\_id)
+    \end{description}
   \item competition\_id\_team\_list
+    \begin{description}
+      \item[competition\_competition\_id] BIGINT(20), UNIQUE, FOREIGN KEY(competition\_id.competition\_id)
+      \item[team\_list\_team\_id] BIGINT(20), UNIQUE, FOREIGN KEY(team.team\_id)
+    \end{description}
   \item competition\_id\_trade\_list
   \item custom\_multipart\_file
   \item machine
@@ -1640,6 +1690,7 @@ d)缩写名或同义名；
   \item team\_trade\_list
   \item trade
 \end{enumerate}
+} % small
 
 \subsection{用于数据库访问或操纵的软件配置项的详细设计}
 
