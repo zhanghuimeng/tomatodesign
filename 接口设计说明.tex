@@ -41,64 +41,24 @@
 \colorlet{myurlcolor}{Aquamarine}
 
 
-\title{软件工程大作业文档}
+\title{接口设计说明}
 \author{Tomato}
 \date{2018年1月}
 
 \begin{document}
 
 	\maketitle
-	\section{系统/子系统设计（结构设计）说明（后台部分）}
-		\subsection{引言}
-			\subsubsection{系统概述}
-				后台分为两个部分，上层是Controller，是用来处理业务逻辑的，下层是数据库，给上层的Controller提供相应的服务。下面会分两块来具体介绍这两部分。详见\ref{接口设计说明}和\ref{数据库（顶层）设计说明}。
-
-			\subsubsection{文档概述}
-				本文档将围绕Spring Boot架构来介绍后台部分。
-		\subsection{系统级设计决策}
-			本系统后台主要使用Spring Boot架构，它支持在开启服务的时候，接受HttpRequest或websocket并进行后台处理，然后返回相应的结果。系统接受的输入是HttpRequest或websocket，详见\ref{接口设计说明}，对于每一个输入的响应，被Controller定义，不同的request会有不同的Controller对其进行处理并返回相应的结果。系统处理的过程中，依赖于两部分的内容：用户的request中的具体内容和底层数据库已有的信息。详见\ref{数据库（顶层{设计说明}}。该系统的数据库存在服务器上，服务器的管理人员可以通过database asdan来访问数据库并查看当前数据库中的所有信息。该系统对服务器的要求是要求服务器能通过maven运行项目，并配有mysql数据库。
-		\subsection{系统体系结构设计}
-			\subsubsection{系统总体设计}
-				\paragraph{概述}
-					本系统要实现的功能详见《prj9ASDAN模拟商业竞拍交易大赛系统》。本系统要实现的性能：响应较快、支持并发、有一定的安全性、可在各个平台上运行、可移植等。本系统支持在Windows、Unix、Linux环境下运行。
-				\paragraph{设计思想}
-					本系统顶层核心要处理的两个问题是对于HttpRequest的处理和对于websocket的处理，而底层核心要处理的问题是数据库的维护等问题。如果直接从头开始开发一套框架，则要实现的内容可能比我们当前写的多得多。所以我们后台根据这个需求找到了Spring Boot框架。Spring Boot 很好地通过了Annotations来实现我们需要的对于前端web端的响应，也实现了我们需要的和数据库的连接、并发的响应等等。本系统并不需要很高深的算法，但是对逻辑上的要求十分的多和细致。
-				\paragraph{基本处理流程}
-                    下面以用户登录为例来讲解后台对于HttpRequest的处理流程。
-
-                    \includegraphics[scale = .3]{fig/基本数据.png}
-
-                    当前端发来HttpRequest或websocket的时候，Controller首先会提取出发来的数据内容，然后将根据业务逻辑处理数据，在处理数据的过程中，可能需要访问数据库中已有的数据，如在这个情况下需要对拍数据库中的账号和密码。也有可能需要修改后台数据库，但是图中的例子不需要。在处理完数据之后，Controller会把数据重新包装，然后根据API文档的说明传回前端。整个数据处理的过程可以理解为从前端发来数据，然后Controller向数据库query数据，然后处理完数据之后又save到数据库中，最后返回给前端。
-                \paragraph{系统体系结构}
-                    \includegraphics[scale = .3]{fig/架构图.png}
-
-                    \includegraphics[scale = .3]{fig/有用.jpeg}
-
-                    如图，前端的功能是响应用户的操作，并把用户操作的数据根据API文档中的要求进行包装，作为HttpRequest或websocket发往后端，后端Controller对于包装好的数据解码，并query Service，和数据库交互，完成数据的处理，并完成数据库的更新。最后将HttpRequest返回给前端或将websocket转发。
-            \subsubsection{接口设计}
-                \includegraphics[scale = .3]{fig/架构图.png}
-		\subsection{系统出错处理设计}
-			系统出错后，后台数据库的内容不会被清空，并且我们是在处理request流程中对数据库是实时更新的，宕机之后数据库的内容还是会保留，当下次启动服务器的时候它还能从原数据库中获得原来的数据，并根据这些数据进行处理。
-
-			当系统出错后，建议重启服务器。
-		\subsection{尚待解决的问题}
-			微信后端的websocket的测试问题。
-		\subsection{需求的可追踪性}
-		\subsection{注解}
-
-	\section{接口设计说明}
-		\label{接口设计说明}
-		\subsection{引言}
-			\subsubsection{系统概述}
+		\section{引言}
+			\subsection{系统概述}
 				接口主要分为两大类的接口，一类是Admin的接口，另一类是Client的接口。Client有两种接口，一种是web端的接口，另一类是微信端的接口。Admin本身是一个package，两种Client公用一个package，名为client。Web端的接口包括了正常HttpRequest和Web端的Websocket。Web端的Websocket使用StompClient协议，在后端使用Spring Boot自带的Controller，即@MessageMapping和@SendTo来完成对socket内容的转发。而微信端在HttpRequest上和Web端共用一个API，并使用裸的socket来回复websocket。
-			\subsubsection{文档概述}
+			\subsection{文档概述}
 				文档首先介绍了使用的文献，然后对于每个特定的接口进行了具体的说明。
-		\subsection{引用文件}
+		\section{引用文件}
 			本文档引用了我们在开发过程中撰写的《RestAPI》文档，详情可查看\href{https://github.com/wenj/tomatodesign/blob/master/REST%20API.tex}{RestAPI.tex}。
 
-		\subsection{Admin接口}
+		\section{Admin接口}
 
-\subsubsection{Login Admin}
+\subsection{Login Admin}
 管理员登录。
 
 这里Controller的实现是查询数据库，看是否username和password匹配，如果不匹配则返回错误，如果匹配则返回登陆成功，并附上一个token。
@@ -136,7 +96,7 @@ HTTP 401 NOTAUTHORIZED
 }
 \end{lstlisting}
 
-\subsubsection{Change Admin Password}
+\subsection{Change Admin Password}
 更改管理员密码。
 
 Controller这里的实现是先query数据库，对拍原用户名和密码是否正确，如果不正确则直接返回错误，如果正确则用新密码更新数据库中的表项。
@@ -172,7 +132,7 @@ HTTP 401 NOTAUTHORIZED
 \end{lstlisting}
 
 
-\subsubsection{Get All Competitions}
+\subsection{Get All Competitions}
 
 列出全部比赛。
 
@@ -213,7 +173,7 @@ HTTP 200 OK
 HTTP 204 NO CONTENT
 \end{lstlisting}
 
-\subsubsection{Create Competition}
+\subsection{Create Competition}
 新建一场比赛。注意，底层也要生成机器的id。注意每场比赛的基本配置（比赛名称，参赛人数）只能创建一次，不能修改。
 
 后端把前端发来的json Parse完之后新建所有的round，把round信息填写完之后用round和其他信息组成比赛。在创建的过程中还要先创建team，再喝competition链接上。如果创建的信息有问题则返回有问题。
@@ -281,7 +241,7 @@ HTTP 404 NOT FOUND
 \end{lstlisting}
 
 
-\subsubsection{Delete Competition By ID}
+\subsection{Delete Competition By ID}
 
 通过ID删除比赛。
 
@@ -316,7 +276,7 @@ HTTP 200 OK
 }
 \end{lstlisting}
 
-\subsubsection{Update Competition Status}
+\subsection{Update Competition Status}
 
 需要进入下一环节时，管理员端会向服务器发送更新比赛状态的请求，服务器返回当前比赛信息以便管理员端更新到最新的比赛状态。
 
@@ -352,7 +312,7 @@ HTTP 404 NOT FOUND
 }
 \end{lstlisting}
 
-\subsubsection{Get Auction Machine}
+\subsection{Get Auction Machine}
 
 获得某场比赛某一轮拍卖机器的初始信息。
 
@@ -398,7 +358,7 @@ HTTP 404 NOT FOUND
 }
 \end{lstlisting}
 
-\subsubsection{Record Auction Result}
+\subsection{Record Auction Result}
 
 登记某场比赛某一轮的拍卖结果。
 
@@ -445,7 +405,7 @@ HTTP 404 NOT FOUND
 \end{lstlisting}
 
 
-\subsubsection{Get Competition Property}
+\subsection{Get Competition Property}
 
 从服务器按id获取某一比赛的各种属性。如果该比赛的属性尚未被设置，则该项为空。属性包括名称、比赛轮数（如果比赛已开始，则不能删除已开始或结束的轮）、比赛各项参数（不能修改已开始或结束的轮的参数）、机器的id等等。
 
@@ -501,7 +461,7 @@ HTTP 404 NOT FOUND
 }
 \end{lstlisting}
 
-\subsubsection{Update Competition Property}
+\subsection{Update Competition Property}
 
 更新比赛的各种属性。属性包括名称、比赛轮数（如果比赛已开始，则不能更改）、比赛各项参数（不能修改已开始或结束的轮的参数）。
 
@@ -557,7 +517,7 @@ HTTP 400 INVALID REQUEST
 }
 \end{lstlisting}
 
-\subsubsection{Get Competition Information}
+\subsection{Get Competition Information}
 获取当前比赛信息，包括队伍的数量、资产、交易记录、机器的使用情况等。
 
 Controller根据比赛ID获取当前所有的比赛信息返回给前端。
@@ -650,10 +610,10 @@ HTTP 404 NOT FOUND
 }
 \end{lstlisting}
 
-\subsection{Client端接口}
+\section{Client端接口}
 首先是HttpRequest的接口。
 
-\subsubsection{Login Client}
+\subsection{Login Client}
 用户登录。
 
 Controller的实现和Admin的登陆类似，这里就不赘述了。
@@ -692,7 +652,7 @@ HTTP 401 NOTAUTHORIZED
 }
 \end{lstlisting}
 
-\subsubsection{Get Information}
+\subsection{Get Information}
 这个接口在用户登录的过程中被使用，当用户登录之后，用户将其id发送给服务器，服务器返回用户当前的状态信息，包括队伍中有哪些人，当前比赛状态，队伍排名等信息。
 
 注：若比赛未开始，则rank为0。
@@ -733,7 +693,7 @@ HTTP 200 OK
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
-			\subsubsection{Get Property}
+			\subsection{Get Property}
 				输入ID，获得与这一ID相关的用户的财产信息。包括机器的使用情况和材料的价格。
 
                 Controller的实现是直接把机器的使用情况和competition中材料的价格返回给前端。
@@ -803,7 +763,7 @@ HTTP 200 OK
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
-			\subsubsection{Get All User}
+			\subsection{Get All User}
 				get 所有队伍，(除了发送消息的队伍)，用来发sell Request时进行选择。
 
                 Controller的实现是通过发来的id查找比赛，然后找到比赛里的所有team，然后返回给前端。
@@ -839,7 +799,7 @@ HTTP 200 OK
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
-				\subsubsection{Get Trade History}
+				\subsection{Get Trade History}
 					交易历史信息。在发订单的时候客户端手动更新History。
 
                     Controller在每次交易创建的时候都会把交易的ID存在team的表中，在每次HttpRequest请求trade history的时候就通过id找到trade，并把trade的主要信息返回给前端。
@@ -897,7 +857,7 @@ HTTP 200 OK
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
-				\subsubsection{Get Produce History}
+				\subsection{Get Produce History}
 					生产历史信息。
 
                     Controller的实现是每一次生产的时候都记录一下Produce的id到team的ProduceList里面。然后query的时候直接通过id找到Produce并把信息返回回去。
@@ -943,7 +903,7 @@ HTTP 404 NOT FOUND
 
 		然后是websocket的接口。
 
-				\subsubsection{交易：发出出售请求，buyer监听}
+				\subsection{交易：发出出售请求，buyer监听}
                 Controller的实现是先把出售请求存下来，然后把它原样转发给买方。
 
 \begin{lstlisting}
@@ -977,7 +937,7 @@ Send JSon Pattern:（发给买方）
  }
 
 \end{lstlisting}
-				\subsubsection{交易结束 给卖家转发账单和现有资产}
+				\subsection{交易结束 给卖家转发账单和现有资产}
 
                 Controller的实现是根据交易的内容修改交易的状态，然后把账单转发给卖家。
 
@@ -1044,7 +1004,7 @@ Send JSon Pattern:
 }
 \end{lstlisting}
 
-				\subsubsection{交易结束 给队友转发账单和现有资产}
+				\subsection{交易结束 给队友转发账单和现有资产}
 
                 Controller的实现是根据交易的内容修改交易的状态，然后把账单转发给卖家。
 
@@ -1111,7 +1071,7 @@ Send JSon Pattern:
 }
 \end{lstlisting}
 
-				\subsubsection{监听比赛状态改变}
+				\subsection{监听比赛状态改变}
 
                 Controller的实现是当Admin更换比赛状态的时候，把比赛状态的具体信息转发给client。
 
@@ -1137,7 +1097,7 @@ Send JSon Pattern:
  }
 \end{lstlisting}
 
-				\subsubsection{监听produce后资产的改变}
+				\subsection{监听produce后资产的改变}
 
                 Controller的实现是把produce看成一个websocket，像HttpRequest一样处理这个produce请求，然后所有的client都监听这个websocket，最后把生产完的账单转发给所有的队友。
 \begin{lstlisting}
@@ -1202,7 +1162,7 @@ Get JSON Pattern:
 }
 \end{lstlisting}
 
-				\subsubsection{撤销，卖方监听}
+				\subsection{撤销，卖方监听}
 
                 Controller的实现是修改订单的状态，然后把回执转发给卖方。
 
@@ -1257,7 +1217,7 @@ Send JSon Pattern:（发给卖方）
 
 \end{lstlisting}
 
-				\subsubsection{撤销，买方监听}
+				\subsection{撤销，买方监听}
 
                 Controller的实现是修改订单的状态，然后把回执转发给买方。
                 
@@ -1311,155 +1271,5 @@ Send JSon Pattern:（发给买方）
  }
 
 \end{lstlisting}
-
-		\subsection{需求的可追踪性}
-
-		\subsection{注解}
-		
-\section{数据库（顶层）设计说明}
-\label{数据库（顶层）设计说明}
-
-
-	\section{软件测试计划}
-		\label{软件测试计划}
-		\subsection{引言}
-			对于后端我们做了详尽的测试，包括Controller正确性的测试，Service的测试和底层数据库的测试。
-			\subsubsection{系统概述}
-				整个test文件包含三种test，分别是Controller的test，Model的test和Service的test。Controller中的test又分为Admin的test和Client的test。由于没有找到微信websocket的test方法，所以微信的websocket没有写test。
-			\subsubsection{文档概述}
-				本文档将介绍测试环境，测试计划以及测试进度。
-			\subsubsection{与其他计划的关系}
-				测试是在接口实现中逐步完善的。与接口的计划相辅相成，可以说是写一个接口就写了一个test。
-		\subsection{软件测试环境}
-			\subsubsection{后端测试}
-				\paragraph{软件项}
-					我们所用的语言是Java，使用的框架是Spring Boot，所有的测试都是搭建在这个框架之上的，写测试的方法也是使用了这个框架集成的test annotations。
-				\paragraph{参与组织}
-					Tomato后端开发组。
-				\paragraph{人员}
-					张慧盟、宋世虹。
-				\paragraph{要执行的测试}
-					如上所述，需要测试Controller，Model和Service。
-		\subsection{计划}
-			\subsection{总体设计}
-				\subsubsection{测试过程}
-					\subsubsection{Controller}
-						\paragraph{Admin}
-							\begin{itemize}
-							\item AdminLoginControllerTest: 测试了两种情况，Admin登陆成功和登录失败。
-							\item AuctionControllerTest: 测试了Auction的接口，包括当get auction的时候应该返回什么，如果发起了错误的get auction操作时会返回什么，post auction的时候Service的更新， post auction错误的时候返回什么等等。
-							\item ChangePasswordControllerTest: 测试了如果password输入正确的更新准则和输入错误时的报错。
-							\item CompetitionCreatorControllerTest:测试了创建比赛，更新比赛和获得比赛具体信息时的返回值，以及上述情况request出错时的返回值。
-							\item CompetitionInfomationControllerTest:测试了请求比赛信息时返回信息的正确性，和请求失败的返回值。
-							\item CompetitionStatusAdminControllerTest:测试了不同比赛状态时的返回值。
-							\item DeleteCompetitionControllerTest:测试了删除比赛时：正常删除、没有比赛和获得全部比赛出错的情况。
-							\item GetAllCompetitionControllerTest:测试了返回全部比赛时：正常返回、没有比赛、获得全部比赛出错的情况。
-							\item UpdateCompetitionStatusControllerTest:测试了更新比赛状态时的返回值：正常返回、没有比赛、后端没法update比赛状态、非法状态等情况。
-							\end{itemize}
-						\paragraph{Client}
-							\begin{itemize}
-							\item BuyMaterialControllerTest:测试了买东西时：买材料和买机器的正在交易、已经交易完成和交易取消的情况。
-							\item ClientInfoControllerTest:测试了获取和更新team信息时成功和失败时的情况。
-							\item ClientLoginControllerTest:测试了登陆成功和失败的情况。
-							\item ClientPropertyControllerTest:测试了team获取property时成功、失败的情况，测试了team生产的时候成功和失败的情况，
-							\item CompetitionStatusControllerTest:测试了更新比赛状态时Client的返回情况。
-							\item GetAllUsersControllerTest:测试了获取所有team的成功和失败的情况。
-							\item GetProduceHistoryControllerTest:测试了获取生产历史的成功和失败（没有team，没有produce记录）的情况。
-							\item GetTradeHistoryControllerTest:测试了获取交易历史的成功和失败（没有team，没有produce记录）的情况。
-							\item ListenPropertyControllerTest:测试了在websocket转发中监听produce后资产的改变。
-							\item SellMaterialControllerTest:测试了卖资产时成功的情况，包括各种材料和机器。
-							\item SendToSellerControllerTest:测试了将售卖的账单转给买方和卖方的同team，主要测试了不同账单状态的回复情况。
-							\item UndoTradeControllerTest:测试了撤销交易的成功情况，主要测试了发给买方和卖方的账单。
-							\end{itemize}
-					\subsubsection{Service}
-						\begin{itemize}
-							\item admin.CompetitionServiceTest: 测试了创建比赛、查找比赛、更新比赛、删除比赛的接口，测试了创建队伍、更新队伍、查找队伍的接口，测试了创建机器、查找机器、更新机器的接口，测试了获得所有Produce信息和交易信息的接口，测试了更新Round的接口。
-							\item admin.LoginServiceTest: 测试了创建Admin、更新Admin、查找Admin和删除Admin的接口。
-							\item user.CompetitionServiceTest: 测试了查找Competition和更新Competition的成功和失败的情况。
-							\item user.LoginServiceTest: 测试了查找team、更新team、创建team和删除team的Service的成功和失败情况。
-							\item user.OrderServiceTest: 测试了创建Produce、查找Produce、更新Produce、删除Produce的接口，测试了创建Trade、 查找Trade、更新Trade、删除Trade的接口。
-						\end{itemize}
-					\subsubsection{Model}
-						\begin{itemize}
-							\item AdminTest: 测试了Admin表的各field。
-							\item CompetitionTest: 测试了Competition表的各field，包括Round。
-							\item MachineTest: 测试了Machine表的各field。
-							\item MaterialTest: 测试了Material的struct是否正确。
-							\item ProduceTest: 测试了Produce表的各field。
-							\item TeamTest: 测试了Team表的各field。
-							\item TradeTest: 测试了Trade表的各field。
-						\end{itemize}
-			\subsection{计划执行的测试}
-				\subsubsection{被测试项}
-					Tomato的整个后端。
-		\subsection{测试进度表}
-			如下图所示。
-
-			\includegraphics[scale = .3]{fig/test_total_time.jpeg}
-		\subsection{需求的可追踪性}
-			本测试计划覆盖了所有后端（除微信WebSocket外）的需求（接口）。
-		\subsection{评价}
-			\subsubsection{评价准则}
-				Coverage。
-			\subsubsection{数据处理}
-				数据处理由IntelliJ自动完成，IntelliJ将为我们生成完整的Coverage报告。
-			\subsubsection{结论}
-				本测试计划十分合理。
-		\subsection{注解}
-	% \section{软件测试说明}
-	% 	%unfinished 不过感觉和测试计划东西一样？？？
-	% 	\subsection{引言}
-	% 		\subsubsection{标识}
-	% 		\subsubsection{系统概述}
-	% 		\subsubsection{文档概述}
-	% 	\subsection{引用文件}
-	% 	\subsection{测试准备}
-	% 	\subsection{测试说明}
-	% 	\subsection{需求的可追踪性}
-	\section{软件测试报告}
-		\subsection{引言}
-			\subsubsection{系统概述}
-				可以参见《\ref{软件测试计划}》中的系统概述。
-			\subsubsection{文档概述}
-				本文档将介绍测试的详细结果，主要是Coverage。
-		\subsection{测试结果概述}
-			\subsubsection{对被测试软件的总体评估}
-				\includegraphics[scale = .3]{fig/test_1.jpg}
-
-				本测试覆盖率很高，可以说是十分到位了。
-			\subsubsection{测试环境的影响}
-				任何平台都可以进行测试，并没有什么影响。
-			\subsubsection{改进建议}
-				如果可以的话，可以绕出架构对微信的websocket进行测试。
-		\subsection{详细的测试结果}
-			以下是我们的测试覆盖率：
-
-			\includegraphics[scale = .3]{fig/test_1.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_2.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_3.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_4.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_5.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_6.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_7.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_8.jpg}
-		
-			\includegraphics[scale = .3]{fig/test_9.jpg}
-		\subsection{测试记录}
-			本次测试结果生成于2018年1月19日，测试平台是Mac，集成开发环境是IntelliJ。见证者是宋世虹和张慧盟。
-		\subsection{评价}
-			\subsubsection{能力}
-				该测试覆盖了几乎所有后台的接口，可以说是很鲁棒，给前端提供了十分稳定的服务。
-			\subsubsection{缺陷和限制}
-				由于没有找到微信的websocket的测试方法，所以我们没有对微信的websocket进行测试，这很遗憾。同时，由于时间的关系，还有极少一部分代码没有被测试到。
-		\subsection{测试活动总结}
-			人力消耗：张慧盟、宋世虹。
-
 
 \end{document}
