@@ -62,9 +62,8 @@
 				\paragraph{概述}
 					本系统要实现的功能详见《prj9ASDAN模拟商业竞拍交易大赛系统》。本系统要实现的性能：响应较快、支持并发、有一定的安全性、可在各个平台上运行、可移植等。本系统支持在Windows、Unix、Linux环境下运行。
 				\paragraph{设计思想}
-					本系统顶层核心要处理的两个问题是对于HttpRequest的处理和对于websocket的处理，而底层核心要处理的问题是数据库的维护等问题。如果直接从头开始开发一套框架，则要实现的内容可能比我们当前写的多得多。所以我们后台根据这个需求找到了Spring Boot框架。Spring Boot很好地通过了Annotations来实现我们需要的对于前端web端的响应，也实现了我们需要的和数据库的连接、并发的响应等等。本系统并不需要很高深的算法，但是对逻辑上的要求十分的多和细致。
+					本系统顶层核心要处理的两个问题是对于HttpRequest的处理和对于websocket的处理，而底层核心要处理的问题是数据库的维护等问题。如果直接从头开始开发一套框架，则要实现的内容可能比我们当前写的多得多。所以我们后台根据这个需求找到了Spring Boot框架。Spring Boot 很好地通过了Annotations来实现我们需要的对于前端web端的响应，也实现了我们需要的和数据库的连接、并发的响应等等。本系统并不需要很高深的算法，但是对逻辑上的要求十分的多和细致。
 				\paragraph{基本处理流程}
-					这里分两块来介绍基本流程：HttpRequest和websocket。
 					%unfinished 需要画图
 				\paragraph{系统体系结构}
 					%unfinished 需要画图
@@ -310,7 +309,7 @@ HTTP 200 OK
 \paragraph*{Web Socket}
 \begin{lstlisting}
 MessageMapping: /api/admin/status/update/id=3
- 
+
 SendTo: /api/admin/status/id=3
 
 EndPoint:  http://127.0.0.1:8090/competitionStatus
@@ -318,11 +317,11 @@ EndPoint:  http://127.0.0.1:8090/competitionStatus
 Send JSON Pattern:
 {
     "status": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
-    "round": 0/1/2/3 
+    "round": 0/1/2/3
     "timeLeft":227(s)
  }
 
-Get JSON Pattern: 
+Get JSON Pattern:
 {
     "status": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
     "round": 0/1/2/3
@@ -761,10 +760,10 @@ HTTP 400 INVALID REQUEST
 }
 \end{lstlisting}
 
-		\subsection{Client端接口}
-			首先是HttpRequest的接口。
+\subsection{Client端接口}
+首先是HttpRequest的接口。
 
-			\subsubsection{Login Client}
+\subsubsection{Login Client}
 用户登录。
 
 \paragraph*{Request}
@@ -801,10 +800,10 @@ HTTP 401 NOTAUTHORIZED
 }
 \end{lstlisting}
 
-			\subsubsection{Get Information}
-				这个接口在用户登录的过程中被使用，当用户登录之后，用户将其id发送给服务器，服务器返回用户当前的状态信息，包括队伍中有哪些人，当前比赛状态，队伍排名等信息。
+\subsubsection{Get Information}
+这个接口在用户登录的过程中被使用，当用户登录之后，用户将其id发送给服务器，服务器返回用户当前的状态信息，包括队伍中有哪些人，当前比赛状态，队伍排名等信息。
 
-				注：若比赛未开始，则rank为0。
+注：若比赛未开始，则rank为0。
 
 				\paragraph*{Request}
 \begin{lstlisting}
@@ -816,6 +815,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 				\paragraph*{Returns}
+>>>>>>> 20eb624d3e96976ee93450dcd011364bb4cf34ae
 \begin{lstlisting}
 HTTP 200 OK
 
@@ -828,7 +828,7 @@ HTTP 200 OK
     "username": "team1",
     "id":3,
     "rank": 1,
-    
+
     "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
     "round": 0/1/2/3   (第（round+1）轮)
     "timeLeft":300(s)
@@ -1046,7 +1046,7 @@ HTTP 404 NOT FOUND
  MessageMapping: /api/client/property/sellerId={sellerId}/buyerId={buyerId}
 
  SendTo: /api/client/property/buyerId={buyerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/trade
 
  Get JSon Pattern:（卖方发送）
@@ -1078,9 +1078,9 @@ Send JSon Pattern:（发给买方）
  MessageMapping: /api/client/tradeFinish/sellerId={sellerId}
 
  SendTo: /api/client/tradeFinish/id={sellerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/tradeFinish
- 
+
  Get JSon Pattern:
  {
     "tradeId":tradeId,
@@ -1091,10 +1091,10 @@ Send JSon Pattern:（发给买方）
     "price":300,
     "number":7
     "seller":"Rua"
-     
+
      "isAccept":true
 }
- 
+
 Send JSon Pattern:
 {
     "reply":
@@ -1107,11 +1107,11 @@ Send JSon Pattern:
     "price":300,
     "number":7
     "seller":"Rua"
-    
+
     "isAccept":true
      }
-     
-   
+
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1142,9 +1142,9 @@ Send JSon Pattern:
  MessageMapping: /api/client/tradeFinish/buyerId={buyerId}
 
  SendTo: /api/client/tradeFinish/id={buyerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/tradeFinish
- 
+
  Get JSon Pattern:
  {
     "tradeId":tradeId,
@@ -1155,10 +1155,10 @@ Send JSon Pattern:
     "price":300,
     "number":7
     "seller":"Rua"
-     
+
      "isAccept":true
 }
- 
+
 Send JSon Pattern:
 {
     "reply":
@@ -1171,11 +1171,11 @@ Send JSon Pattern:
     "price":300,
     "number":7
     "seller":"Rua"
-    
+
     "isAccept":true
      }
-     
-   
+
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1204,7 +1204,7 @@ Send JSon Pattern:
 				\subsubsection{监听比赛状态改变}
 \begin{lstlisting}
  MessageMapping: /api/client/competition/status/id={id}
- 
+
  SendTo: /api/client/competitionStatus/id={id}
 
 EndPoint:  http://127.0.0.1:8090/hhh
@@ -1219,7 +1219,7 @@ Send JSon Pattern:
 
  Get JSON Pattern:
  {
-    "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", 
+    "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest",
     "round": 0/1/2/3   (从0开始)
  }
 \end{lstlisting}
@@ -1227,7 +1227,7 @@ Send JSon Pattern:
 				\subsubsection{监听produce后资产的改变}
 \begin{lstlisting}
  MessageMapping: /api/client/ListenProperty/id=3
- 
+
  SendTo: /api/client/ListenProperty/receive/id=3
 
 EndPoint:  http://127.0.0.1:8090/listenProperty
@@ -1292,7 +1292,7 @@ Get JSON Pattern:
  MessageMapping: /api/client/undo/sendToSeller/sellerId={sellerId}/buyerId={buyerId}
 
  SendTo: /api/client/receiveUndo/id={sellerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/undo
 
  Get JSon Pattern:（卖方发送）
@@ -1312,7 +1312,7 @@ Send JSon Pattern:（发给卖方）
     "number":7
     "seller":"Rua"
      }
-     
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1344,7 +1344,7 @@ Send JSon Pattern:（发给卖方）
  MessageMapping: /api/client/undo/sendToBuyer/sellerId={sellerId}/buyerId={buyerId}
 
  SendTo: /api/client/receiveUndo/id={buyerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/undo
 
  Get JSon Pattern:（卖方发送）
@@ -1364,7 +1364,7 @@ Send JSon Pattern:（发给买方）
     "number":7
     "seller":"Rua"
      }
-     
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1395,8 +1395,10 @@ Send JSon Pattern:（发给买方）
 
 		\subsection{注解}
 		
-	\section{数据库（顶层）设计说明}
-		\label{数据库（顶层）设计说明}
+\section{数据库（顶层）设计说明}
+\label{数据库（顶层）设计说明}
+
+
 	\section{软件测试计划}
 		\label{软件测试计划}
 		\subsection{引言}
@@ -1454,7 +1456,7 @@ Send JSon Pattern:（发给买方）
 							\item admin.LoginServiceTest: 测试了创建Admin、更新Admin、查找Admin和删除Admin的接口。
 							\item user.CompetitionServiceTest: 测试了查找Competition和更新Competition的成功和失败的情况。
 							\item user.LoginServiceTest: 测试了查找team、更新team、创建team和删除team的Service的成功和失败情况。
-							\item user.OrderServiceTest: 测试了创建Produce、查找Produce、更新Produce、删除Produce的接口，测试了创建Trade、查找Trade、更新Trade、删除Trade的接口。
+							\item user.OrderServiceTest: 测试了创建Produce、查找Produce、更新Produce、删除Produce的接口，测试了创建Trade、 查找Trade、更新Trade、删除Trade的接口。
 						\end{itemize}
 					\subsubsection{Model}
 						\begin{itemize}
@@ -1540,41 +1542,3 @@ Send JSon Pattern:（发给买方）
 
 
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
