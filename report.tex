@@ -1,78 +1,56 @@
-\documentclass[12pt, a4paper,UTF8]{article}
-\usepackage[slantfont, boldfont]{xeCJK}
-\usepackage{ulem}
+% !Mode:: "TeX:UTF-8"
+\documentclass{article}
+\usepackage[hyperref, UTF8]{ctex}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{geometry}
 \usepackage{amsmath}
-\usepackage{booktabs}
-\usepackage{colortbl}
-\usepackage[top = 1.0in, bottom = 1.0in, left = 1.0in, right = 1.0in]{geometry}
-\usepackage{lipsum}
-\usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage{amsfonts}
+\usepackage[section]{placeins}
 \usepackage{listings}
-\usepackage{xcolor}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\usepackage{fontspec}
+\usepackage{booktabs} % 表格上的不同横线
+\setmonofont[Mapping={}]{Consolas}	%英文引号之类的正常显示，相当于设置英文字体
+\setsansfont{Consolas} %设置英文字体 Monaco, Consolas,  Fantasque Sans Mono
+\setmainfont{Consolas} %设置英文字体
 
-\usepackage{circuitikz}
-% \usepackage{tikz}
-% \usetikzlibrary{circuits.logic.US}
-
-
-% \setCJKmainfont{Times New Roman}
-% \setCJKmonofont{Times New Roman}
-
-% \setmainfont[BoldFont={Times New Roman},ItalicFont={STKaiti}]{Times New Roman}
-% \setsansfont[BoldFont=Times New Roman]{STKaiti}
-% \setmonofont{Times New Roman}
-
-\setlength{\parskip}{0.5\baselineskip}
-\setlength{\parindent}{2em}
-
-\newcolumntype{Y}{>{\columncolor{red}}p{12pt}}
-\newcolumntype{N}{>{\columncolor{white}}p{12pt}}
-% \title{???}
-% \author{???}
-
-
-% \lstset{numbers=left,
-% numberstyle=\tiny,
-% keywordstyle=\color{blue!70}, commentstyle=\color{red!50!green!50!blue!50},
-% frame=shadowbox,
-% rulesepcolor=\color{red!20!green!20!blue!20}
-% }
-
-\lstset{
-  % language=[ANSI]c,
-  basicstyle=\small,
-  numbers=left,
-  keywordstyle=\color{blue},
-  numberstyle={\tiny\color{lightgray}},
-  stepnumber=1, %行号会逐行往上递增
-  numbersep=5pt,
-  commentstyle=\small\color{red},
-  backgroundcolor=\color[rgb]{0.95,1.0,1.0},
-  showspaces=false,
-  showtabs=false,
-  frame=shadowbox, framexleftmargin=5mm, rulesepcolor=\color{red!20!green!20!blue!20!},
-% frame=single,
-%  TABframe=single,
-  tabsize=4,
-  breaklines=tr,
-  extendedchars=false %这一条命令可以解决代码跨页时，章节标题，页眉等汉字不显示的问题
-}
-			
-\newcommand{\fullimage}[1]{
-	\begin{flushleft}
-		\includegraphics[width=\textwidth]{#1}
-	\end{flushleft}
-}
-			
-\newcommand{\centerimage}[1]{
-	\begin{center}
-		\includegraphics{#1}
-	\end{center}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+    backgroundcolor=\color{white},   % choose the background color
+    basicstyle=\footnotesize\ttfamily,        % size of fonts used for the code
+    columns=fullflexible,
+    breaklines=true,                 % automatic line breaking only at whitespace
+    captionpos=b,                    % sets the caption-position to bottom
+    tabsize=4,
+    backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+    commentstyle=\color{mygreen},    % comment style
+    escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+    keywordstyle=\color{blue},       % keyword style
+    stringstyle=\color{mymauve}\ttfamily,     % string literal style
+    showstringspaces=false,                % 不显示字符串中的空格
+    frame=none,
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    % identifierstyle=\color{red},
+    language=sql,
 }
 
-\newcommand{\pause}[0]{}
+% 设置hyperlink的颜色
+\newcommand\myshade{85}
+\colorlet{mylinkcolor}{violet}
+\colorlet{mycitecolor}{YellowOrange}
+\colorlet{myurlcolor}{Aquamarine}
 
+\hypersetup{
+  linkcolor  = mylinkcolor!\myshade!black,
+  citecolor  = mycitecolor!\myshade!black,
+  urlcolor   = myurlcolor!\myshade!black,
+  colorlinks = true,
+}
+
+\renewcommand\figurename{图}
 
 \title{软件工程大作业文档}
 \author{Tomato}
@@ -92,16 +70,16 @@
 			本系统后台主要使用Spring Boot架构，它支持在开启服务的时候，接受HttpRequest或websocket并进行后台处理，然后返回相应的结果。系统接受的输入是HttpRequest或websocket，详见\ref{接口设计说明}，对于每一个输入的响应，被Controller定义，不同的request会有不同的Controller对其进行处理并返回相应的结果。系统处理的过程中，依赖于两部分的内容：用户的request中的具体内容和底层数据库已有的信息。详见\ref{数据库（顶层{设计说明}}。该系统的数据库存在服务器上，服务器的管理人员可以通过database asdan来访问数据库并查看当前数据库中的所有信息。该系统对服务器的要求是要求服务器能通过maven运行项目，并配有mysql数据库。
 		\subsection{系统体系结构设计}
 			\subsubsection{系统总体设计}
-				\subsubsubsection{概述}
+				\paragraph{概述}
 					%unfinished
 					本系统要实现的功能详见《prj9ASDAN模拟商业竞拍交易大赛系统》。本系统要实现的性能：响应较快、支持并发、有一定的安全性、可在各个平台上运行、可移植等。本系统支持在Windows、Unix、Linux环境下运行。
-				\subsubsubsection{设计思想}
-					本系统顶层核心要处理的两个问题是对于HttpRequest的处理和对于websocket的处理，而底层核心要处理的问题是数据库的维护等问题。如果直接从头开始开发一套框架，则要实现的内容可能比我们当前写的多得多。所以我们后台根据这个需求找到了Spring Boot框架。Spring Boot很好地通过了Annotations来实现我们需要的对于前端web端的响应，也实现了我们需要的和数据库的连接、并发的响应等等。本系统并不需要很高深的算法，但是对逻辑上的要求十分的多和细致。
-				\subsubsubsection{基本处理流程}
+				\paragraph{设计思想}
+					本系统顶层核心要处理的两个问题是对于HttpRequest的处理和对于websocket的处理，而底层核心要处理的问题是数据库的维护等问题。如果直接从头开始开发一套框架，则要实现的内容可能比我们当前写的多得多。所以我们后台根据这个需求找到了Spring Boot框架。Spring Boot 很好地通过了Annotations来实现我们需要的对于前端web端的响应，也实现了我们需要的和数据库的连接、并发的响应等等。本系统并不需要很高深的算法，但是对逻辑上的要求十分的多和细致。
+				\paragraph{基本处理流程}
 					%unfinished 需要画图
-				\subsubsubsection{系统体系结构}
+				\paragraph{系统体系结构}
 					%unfinished 需要画图
-				\subsubsubsection{功能需求与系统配置项的关系}
+				\paragraph{功能需求与系统配置项的关系}
 					%unfinished 需要画图
 			\subsubsection{执行概念}
 				%unfinished 需要画图
@@ -131,7 +109,7 @@
 \subsubsection{Login Admin}
 管理员登录。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 POST /api/admin/login
 
@@ -146,7 +124,7 @@ Accept: application/json
 }
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 {
@@ -156,7 +134,7 @@ HTTP 200 OK
 
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 401 NOTAUTHORIZED
 {
@@ -167,7 +145,7 @@ HTTP 401 NOTAUTHORIZED
 \subsubsection{Change Admin Password}
 更改管理员密码。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 POST /api/admin/update
 
@@ -183,13 +161,13 @@ Accept: application/json
 }
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 401 NOTAUTHORIZED
 {
@@ -204,7 +182,7 @@ HTTP 401 NOTAUTHORIZED
 
 Status是"not\_start", "auction\_not\_record", "auction\_recorded", "trade", "rest", "end"之一。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 GET /api/admin/competition/getall
 
@@ -214,7 +192,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
@@ -232,7 +210,7 @@ HTTP 200 OK
 ]
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 204 NO CONTENT
 \end{lstlisting}
@@ -240,7 +218,7 @@ HTTP 204 NO CONTENT
 \subsubsection{Create Competition}
 新建一场比赛。注意，底层也要生成机器的id。注意每场比赛的基本配置（比赛名称，参赛人数）只能创建一次，不能修改。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 POST /api/admin/competition/new
 
@@ -288,13 +266,13 @@ Accept: application/json
 }
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 201 CREATED
 
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -307,7 +285,7 @@ HTTP 404 NOT FOUND
 
 通过ID删除比赛。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 DELETE /api/admin/competiton/id={competition_id}
 
@@ -317,7 +295,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 [
@@ -329,7 +307,7 @@ HTTP 200 OK
 ]
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 {
     "error":"Unable to delete. Competition with id xxx not found."
@@ -340,10 +318,10 @@ HTTP 200 OK
 
 需要进入下一环节时，管理员端会向服务器发送更新比赛状态的请求，服务器返回当前比赛信息以便管理员端更新到最新的比赛状态。
 
-\subsubsubsection*{Web Socket}
+\paragraph*{Web Socket}
 \begin{lstlisting}
 MessageMapping: /api/admin/status/update/id=3
- 
+
 SendTo: /api/admin/status/id=3
 
 EndPoint:  http://127.0.0.1:8090/competitionStatus
@@ -351,18 +329,18 @@ EndPoint:  http://127.0.0.1:8090/competitionStatus
 Send JSON Pattern:
 {
     "status": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
-    "round": 0/1/2/3 
+    "round": 0/1/2/3
     "timeLeft":227(s)
  }
 
-Get JSON Pattern: 
+Get JSON Pattern:
 {
     "status": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
     "round": 0/1/2/3
 }
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -374,7 +352,7 @@ HTTP 404 NOT FOUND
 
 获得某场比赛某一轮拍卖机器的初始信息。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 GET /api/admin/competition/auction/id={id}/round={round}
 
@@ -384,7 +362,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 [
@@ -406,7 +384,7 @@ HTTP 200 OK
 ]
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -418,7 +396,7 @@ HTTP 404 NOT FOUND
 
 登记某场比赛某一轮的拍卖结果。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 POST /api/admin/competition/record/id={id}/round={round}
 
@@ -428,7 +406,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 [
@@ -450,7 +428,7 @@ HTTP 200 OK
 ]
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -463,7 +441,7 @@ HTTP 404 NOT FOUND
 
 从服务器按id获取某一比赛的各种属性。如果该比赛的属性尚未被设置，则该项为空。属性包括名称、比赛轮数（如果比赛已开始，则不能删除已开始或结束的轮）、比赛各项参数（不能修改已开始或结束的轮的参数）、机器的id等等。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 GET /api/admin/competition/property/id={id}
 
@@ -473,7 +451,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 {
@@ -505,7 +483,7 @@ HTTP 200 OK
 
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -517,7 +495,7 @@ HTTP 404 NOT FOUND
 
 更新比赛的各种属性。属性包括名称、比赛轮数（如果比赛已开始，则不能更改）、比赛各项参数（不能修改已开始或结束的轮的参数）。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 PUT /api/admin/competition/property/id={id}
 
@@ -547,12 +525,12 @@ Accept: application/json
 }
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 201 CREATED
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -570,7 +548,7 @@ HTTP 400 INVALID REQUEST
 \subsubsection{Get Competition Information}
 获取当前比赛信息，包括队伍的数量、资产、交易记录、机器的使用情况等。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 GET /api/admin/competition/info/id={id}
 
@@ -580,7 +558,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 {
@@ -648,9 +626,9 @@ HTTP 200 OK
 }
 
 \end{lstlisting}
-content中是wood，brick，cement，machine_wood，machine_brick，machine_cement中的一个。
+content中是wood，brick，cement，machine\_wood，machine\_brick，machine\_cement中的一个。
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -661,7 +639,7 @@ HTTP 404 NOT FOUND
 \subsubsection{Record machine owner}
 向服务器发送对比赛的更新信息。增加机器、分配财产之类的。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 PUT /api/admin/competition/info/id={id}
 
@@ -709,7 +687,7 @@ Accept: application/json
 }
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 {
@@ -777,9 +755,9 @@ HTTP 200 OK
 }
 
 \end{lstlisting}
-content中是wood，brick，cement，machine_wood，machine_brick，machine_cement中的一个。
+content中是wood，brick，cement，machine\_wood，machine\_brick，machine\_cement中的一个。
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 {
@@ -794,13 +772,13 @@ HTTP 400 INVALID REQUEST
 }
 \end{lstlisting}
 
-		\subsection{Client端接口}
-			首先是HttpRequest的接口。
+\subsection{Client端接口}
+首先是HttpRequest的接口。
 
-			\subsubsection{Login Client}
+\subsubsection{Login Client}
 用户登录。
 
-\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 POST /api/client/login
 
@@ -815,7 +793,7 @@ Accept: application/json
 }
 \end{lstlisting}
 
-\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 {
@@ -826,7 +804,7 @@ HTTP 200 OK
 
 \end{lstlisting}
 
-\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 401 NOTAUTHORIZED
 {
@@ -834,12 +812,12 @@ HTTP 401 NOTAUTHORIZED
 }
 \end{lstlisting}
 
-			\subsubsection{Get Information}
-				这个接口在用户登录的过程中被使用，当用户登录之后，用户将其id发送给服务器，服务器返回用户当前的状态信息，包括队伍中有哪些人，当前比赛状态，队伍排名等信息。
+\subsubsection{Get Information}
+这个接口在用户登录的过程中被使用，当用户登录之后，用户将其id发送给服务器，服务器返回用户当前的状态信息，包括队伍中有哪些人，当前比赛状态，队伍排名等信息。
 
-				注：若比赛未开始，则rank为0。
+注：若比赛未开始，则rank为0。
 
-				\subsubsubsection*{Request}
+\paragraph*{Request}
 \begin{lstlisting}
 GET /api/client/info/id={id}
 
@@ -848,7 +826,7 @@ Auth:
 Content-type: application/json
 Accept: application/json
 \end{lstlisting}
-				\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
@@ -861,20 +839,20 @@ HTTP 200 OK
     "username": "team1",
     "id":3,
     "rank": 1,
-    
+
     "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", "end"）
     "round": 0/1/2/3   (第（round+1）轮)
     "timeLeft":300(s)
 }
 \end{lstlisting}
-				\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
-			\subsubsection{Get Property}
-				输入ID，获得与这一ID相关的用户的财产信息。包括机器的使用情况和材料的价格。
-				\subsubsubsection*{Request}
+\subsubsection{Get Property}
+输入ID，获得与这一ID相关的用户的财产信息。包括机器的使用情况和材料的价格。
+\paragraph*{Request}
 \begin{lstlisting}
 GET /api/client/property/id={id}
 
@@ -884,7 +862,7 @@ Content-type: application/json
 Accept: application/json
 \end{lstlisting}
 
-				\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
@@ -935,14 +913,14 @@ HTTP 200 OK
 }
 \end{lstlisting}
 
-				\subsubsubsection*{Error}
+\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
-			\subsubsection{Get All User}
-				get 所有队伍，(除了发送消息的队伍)，用来发sell Request时进行选择
-					\subsubsubsection*{Request}
+\subsubsection{Get All User}
+get 所有队伍，(除了发送消息的队伍)，用来发sell Request时进行选择
+\paragraph*{Request}
 \begin{lstlisting}
 GET /api/client/getAllUser/id={id}
 
@@ -952,7 +930,7 @@ Content-type: application/json
 Accept: application/json
 
 \end{lstlisting}
-					\subsubsubsection*{Returns}
+\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
 
@@ -969,14 +947,14 @@ HTTP 200 OK
     ]
 }
 \end{lstlisting}
-					\subsubsubsection*{Error}
+					\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
 				\subsubsection{Get Trade History}
 					交易历史信息。在发订单的时候客户端手动更新History。
-					\subsubsubsection*{Request}
+					\paragraph*{Request}
 \begin{lstlisting}
 GET /api/client/tradehHistory/id={id}
 
@@ -985,7 +963,7 @@ Auth:
 Content-type: application/json
 Accept: application/json
 \end{lstlisting}
-					\subsubsubsection*{Returns}
+					\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
         [
@@ -1025,14 +1003,14 @@ HTTP 200 OK
             "buyerId":9,
             }
         ]\end{lstlisting}
-					\subsubsubsection*{Error}
+					\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
 
 				\subsubsection{Get Produce History}
 					生产历史信息。
-					\subsubsubsection*{Request}
+					\paragraph*{Request}
 \begin{lstlisting}
 GET /api/client/produceHistory/id={id}
 
@@ -1041,7 +1019,7 @@ Auth:
 Content-type: application/json
 Accept: application/json
 \end{lstlisting}
-					\subsubsubsection*{Returns}
+					\paragraph*{Returns}
 \begin{lstlisting}
 HTTP 200 OK
         [
@@ -1067,7 +1045,7 @@ HTTP 200 OK
             "number": 2
             },
         ]\end{lstlisting}
-					\subsubsubsection*{Error}
+					\paragraph*{Error}
 \begin{lstlisting}
 HTTP 404 NOT FOUND
 \end{lstlisting}
@@ -1079,7 +1057,7 @@ HTTP 404 NOT FOUND
  MessageMapping: /api/client/property/sellerId={sellerId}/buyerId={buyerId}
 
  SendTo: /api/client/property/buyerId={buyerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/trade
 
  Get JSon Pattern:（卖方发送）
@@ -1111,9 +1089,9 @@ Send JSon Pattern:（发给买方）
  MessageMapping: /api/client/tradeFinish/sellerId={sellerId}
 
  SendTo: /api/client/tradeFinish/id={sellerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/tradeFinish
- 
+
  Get JSon Pattern:
  {
     "tradeId":tradeId,
@@ -1124,10 +1102,10 @@ Send JSon Pattern:（发给买方）
     "price":300,
     "number":7
     "seller":"Rua"
-     
+
      "isAccept":true
 }
- 
+
 Send JSon Pattern:
 {
     "reply":
@@ -1140,11 +1118,11 @@ Send JSon Pattern:
     "price":300,
     "number":7
     "seller":"Rua"
-    
+
     "isAccept":true
      }
-     
-   
+
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1175,9 +1153,9 @@ Send JSon Pattern:
  MessageMapping: /api/client/tradeFinish/buyerId={buyerId}
 
  SendTo: /api/client/tradeFinish/id={buyerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/tradeFinish
- 
+
  Get JSon Pattern:
  {
     "tradeId":tradeId,
@@ -1188,10 +1166,10 @@ Send JSon Pattern:
     "price":300,
     "number":7
     "seller":"Rua"
-     
+
      "isAccept":true
 }
- 
+
 Send JSon Pattern:
 {
     "reply":
@@ -1204,11 +1182,11 @@ Send JSon Pattern:
     "price":300,
     "number":7
     "seller":"Rua"
-    
+
     "isAccept":true
      }
-     
-   
+
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1237,7 +1215,7 @@ Send JSon Pattern:
 				\subsubsection{监听比赛状态改变}
 \begin{lstlisting}
  MessageMapping: /api/client/competition/status/id={id}
- 
+
  SendTo: /api/client/competitionStatus/id={id}
 
 EndPoint:  http://127.0.0.1:8090/hhh
@@ -1252,7 +1230,7 @@ Send JSon Pattern:
 
  Get JSON Pattern:
  {
-    "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest", 
+    "gameStatus": "auction"（"not_start", "auction_not_record", "auction_recorded", "trade", "rest",
     "round": 0/1/2/3   (从0开始)
  }
 \end{lstlisting}
@@ -1260,7 +1238,7 @@ Send JSon Pattern:
 				\subsubsection{监听produce后资产的改变}
 \begin{lstlisting}
  MessageMapping: /api/client/ListenProperty/id=3
- 
+
  SendTo: /api/client/ListenProperty/receive/id=3
 
 EndPoint:  http://127.0.0.1:8090/listenProperty
@@ -1325,7 +1303,7 @@ Get JSON Pattern:
  MessageMapping: /api/client/undo/sendToSeller/sellerId={sellerId}/buyerId={buyerId}
 
  SendTo: /api/client/receiveUndo/id={sellerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/undo
 
  Get JSon Pattern:（卖方发送）
@@ -1345,7 +1323,7 @@ Send JSon Pattern:（发给卖方）
     "number":7
     "seller":"Rua"
      }
-     
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1377,7 +1355,7 @@ Send JSon Pattern:（发给卖方）
  MessageMapping: /api/client/undo/sendToBuyer/sellerId={sellerId}/buyerId={buyerId}
 
  SendTo: /api/client/receiveUndo/id={buyerId}
- 
+
  EndPoint:  http://127.0.0.1:8090/undo
 
  Get JSon Pattern:（卖方发送）
@@ -1397,7 +1375,7 @@ Send JSon Pattern:（发给买方）
     "number":7
     "seller":"Rua"
      }
-     
+
    "propertyList":
    {
    	"wealth":1000,
@@ -1428,8 +1406,10 @@ Send JSon Pattern:（发给买方）
 
 		\subsection{注解}
 		
-	\section{数据库（顶层）设计说明}
-		\label{数据库（顶层）设计说明}
+\section{数据库（顶层）设计说明}
+\label{数据库（顶层）设计说明}
+
+
 	\section{软件测试计划}
 		\label{软件测试计划}
 		\subsection{引言}
@@ -1442,19 +1422,19 @@ Send JSon Pattern:（发给买方）
 				测试是在接口实现中逐步完善的。与接口的计划相辅相成，可以说是写一个接口就写了一个test。
 		\subsection{软件测试环境}
 			\subsubsection{后端测试}
-				\subsubsubsection{软件项}
+				\paragraph{软件项}
 					我们所用的语言是Java，使用的框架是Spring Boot，所有的测试都是搭建在这个框架之上的，写测试的方法也是使用了这个框架集成的test annotations。
-				\subsubsubsection{参与组织}
+				\paragraph{参与组织}
 					Tomato后端开发组。
-				\subsubsubsection{人员}
+				\paragraph{人员}
 					张慧盟、宋世虹。
-				\subsubsubsection{要执行的测试}
+				\paragraph{要执行的测试}
 					如上所述，需要测试Controller，Model和Service。
 		\subsection{计划}
 			\subsection{总体设计}
 				\subsubsection{测试过程}
 					\subsubsection{Controller}
-						\subsubsubsection{Admin}
+						\paragraph{Admin}
 							\begin{itemize}
 							\item AdminLoginControllerTest: 测试了两种情况，Admin登陆成功和登录失败。
 							\item AuctionControllerTest: 测试了Auction的接口，包括当get auction的时候应该返回什么，如果发起了错误的get auction操作时会返回什么，post auction的时候Service的更新， post auction错误的时候返回什么等等。
@@ -1466,7 +1446,7 @@ Send JSon Pattern:（发给买方）
 							\item GetAllCompetitionControllerTest:测试了返回全部比赛时：正常返回、没有比赛、获得全部比赛出错的情况。
 							\item UpdateCompetitionStatusControllerTest:测试了更新比赛状态时的返回值：正常返回、没有比赛、后端没法update比赛状态、非法状态等情况。
 							\end{itemize}
-						\subsubsubsection{Client}
+						\paragraph{Client}
 							\begin{itemize}
 							\item BuyMaterialControllerTest:测试了买东西时：买材料和买机器的正在交易、已经交易完成和交易取消的情况。
 							\item ClientInfoControllerTest:测试了获取和更新team信息时成功和失败时的情况。
@@ -1487,7 +1467,7 @@ Send JSon Pattern:（发给买方）
 							\item admin.LoginServiceTest: 测试了创建Admin、更新Admin、查找Admin和删除Admin的接口。
 							\item user.CompetitionServiceTest: 测试了查找Competition和更新Competition的成功和失败的情况。
 							\item user.LoginServiceTest: 测试了查找team、更新team、创建team和删除team的Service的成功和失败情况。
-							\item user.OrderServiceTest: 测试了创建Produce、查找Produce、更新Produce、删除Produce的接口，测试了创建Trade、查找Trade、更新Trade、删除Trade的接口。
+							\item user.OrderServiceTest: 测试了创建Produce、查找Produce、更新Produce、删除Produce的接口，测试了创建Trade、 查找Trade、更新Trade、删除Trade的接口。
 						\end{itemize}
 					\subsubsection{Model}
 						\begin{itemize}
@@ -1573,41 +1553,3 @@ Send JSon Pattern:（发给买方）
 
 
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
