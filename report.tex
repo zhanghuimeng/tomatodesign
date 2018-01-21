@@ -1673,8 +1673,24 @@ d)缩写名或同义名；
       \item[team\_list\_team\_id] BIGINT(20), UNIQUE, FOREIGN KEY(team.team\_id)
     \end{description}
   \item competition\_id\_trade\_list
+    \begin{description}
+      \item[competition\_competition\_id] BIGINT(20), UNIQUE, FOREIGN KEY(competition\_id.competition\_id)
+      \item[trade\_list\_trade\_id] BIGINT(20), UNIQUE, FOREIGN KEY(trade.trade\_id)
+    \end{description}
   \item custom\_multipart\_file
+    \begin{description}
+      \item[file\_id] BIGINT(20), AUTO INCREMENT, PRIMARY KEY
+      \item[content\_type] VARCHAR(255)
+      \item[file\_original\_size] BIGINT(20)
+      \item[img_content] longblob
+    \end{description}
   \item machine
+    \begin{description}
+      \item[machine\_id] BIGINT(20), AUTO INCREMENT, PRIMARY KEY
+      \item[] 
+      \item[] 
+      \item[] 
+    \end{description}
   \item machine\_trade\_list
   \item produce
   \item round
