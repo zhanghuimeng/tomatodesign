@@ -1490,7 +1490,7 @@ d)缩写名或同义名；
 \subsubsection{内部设计}
 
 \subsubsection{逻辑设计}
-数据库的操作实体类共有8个，接下来将详细介绍每个类内部的成员变量。
+数据库的操作实体类共有7个，接下来将详细介绍每个类内部的成员变量。
 
 \paragraph{Admin}
 存放管理员的类。
@@ -1522,6 +1522,7 @@ d)缩写名或同义名；
 \end{description}
 
 \paragraph{Competition::Round}
+存放比赛中一轮的信息的类。
 \begin{description}
   \item[roundId (Long)] 主键，存放轮ID。
   \item[startTime (Date)] 本轮开始时间。
@@ -1530,19 +1531,115 @@ d)缩写名或同义名；
   \item[machineStartPriceMap (Map<Material, Integer>)] 每种机器的起拍价格。
   \item[machineList (List<Machine>)] 本轮拍卖的全部机器。
   \item[machineAuctionPriceMap (Map<Machine, Integer>)] 每个机器的拍卖价格。
+  \item[materialPriceMap (Map<Material, Integer>)] 每种材料的生产成本。
+  \item[produceList (List<Produce>)] 本轮生产材料的列表。
+  \item[tradeList (List<Trade>)] 本轮的交易列表。
+  \item[materialPerHouse (Map<Material, Integer>)] 本轮建造一栋房子所需的材料数量。
 \end{description}
 
 \paragraph{Machine}
-
-\paragraph{Material}
+存放机器的类。
+\begin{description}
+  \item[serialVersionUID (static final long)] 用于序列化不同版本的类。
+  \item[machineId (Long)] 主键，存放机器ID。
+  \item[owner (Team)] 机器的拥有者。
+  \item[material (Material)] 机器生产的材料种类。
+  \item[left (Integer)] 机器剩余的生产次数。
+  \item[tradeList (List<Trade>)] 这台机器对应的交易列表。
+\end{description}
 
 \paragraph{Produce}
+存放交易的类。
+\begin{description}
+  \item[serialVersionUID (static final long)] 用于序列化不同版本的类。
+  \item[produceId (Long)] 主键，存放交易ID。
+  \item[team (Team)] 进行生产的队伍。
+  \item[machine (Machine)] 进行生产用的机器。
+  \item[material (Material)] 生产的材料类型。
+  \item[amount (Integer)] 生产材料的数量。
+  \item[price (Integer)] 生产单位材料的成本。
+  \item[produceTime (Date)] 生产时间。
+\end{description}
 
 \paragraph{Team}
+存放队伍信息的类。
+\begin{description}
+  \item[serialVersionUID (static final long)] 用于序列化不同版本的类。
+  \item[teamId (Long)] 主键，存放队伍ID。
+  \item[name (String)] 队伍名称。
+  \item[username (String)] 队伍用户名。
+  \item[password (String)] 队伍密码。
+  \item[picture (CustomMultipartFile)] 队伍头像。
+  \item[rank (Integer)] 队伍当前排名。
+  \item[machineList (List<Long>)] 队伍拥有的所有机器的ID。
+  \item[tradeList (List<Long>)] 队伍进行的全部交易的ID。
+  \item[tramProduceList (List<Long>)] 队伍进行的全部生产的ID。
+  \item[money (Integer)] 队伍当前现金数量。
+  \item[materialMap (Map<Material, Integer>)] 队伍当前拥有各种材料的数量。
+  \item[materialLockMap (Map<Material, Boolean>)] 某种材料是否属于出售状态。
+  \item[machineLockMap (Map<Machine, Boolean>)] 队伍拥有的某个机器是否处于出售状态。
+  \item[enabled (boolean)] 当前队伍的权限是否被启用。
+  \item[member (List<String>)] 队伍成员列表。
+  \item[competition (Competition)] 队伍所在的比赛。
+\end{description}
 
 \paragraph{Trade}
+存放交易信息的类。
+\begin{description}
+  \item[serialVersionUID (static final long)] 用于序列化不同版本的类。
+  \item[tradeId (Long)] 主键，存放交易ID。
+  \item[type (TradeType)] 交易类型，分为MATERIAL（交易材料）、MACHINE（交易机器）、AUCTION（拍卖）三类。
+  \item[seller (Team)] 交易的卖方队伍，如果交易类型为拍卖，则置为空。
+  \item[buyer (Team)] 交易的买方队伍。
+  \item[material (Material)] 交易的材料类型，如果交易类型为拍卖或交易机器，则置为空。
+  \item[machine (Machine)] 交易的机器，如果交易类型为交易材料，则置为空。
+  \item[amount (Integer)] 交易的材料/机器数量，如果交易的为机器，则置为1。
+  \item[price (Integer)] 交易的材料/机器的单价。
+  \item[proposeTime (Date)] 卖方提出交易的时间。
+  \item[tradeTime (Date)] 交易成功的时间。
+  \item[status (Status)] 交易状态，分为PENDING（等待买方确认中）、CANCELLED（已取消）和SUCCEED（已成功）三种。
+\end{description}
 
 \subsubsection{物理设计}
+根据上述实体类设计，Hibernate一共生成了28张表，下面列出每张表的每一列：
+\begin{enumerate}
+  \item admin
+    \begin{description}
+      \item [admin\_id] BIGINT(20), AUTO INCREMENT, PRIMARY KEY
+      \item [enabled] INT(11)
+      \item [name] VARCHAR(255)
+      \item [password] VARCHAR(255)
+      \item [role] VARCHAR(5)
+      \item [username] VARCHAR(255)
+    \end{description}
+  \item admin\_competition\_list
+  \item competition\$round\_machine\_auction\_price\_map
+  \item competition\$round\_machine\_number\_map
+  \item competition\$round\_machine\_start\_price\_map
+  \item competition\$round\_material\_per\_house
+  \item competition\$round\_material\_price\_map
+  \item competition\_id
+  \item competition\_id\_produce\_list
+  \item competition\_id\_round\_list
+  \item competition\_id\_team\_list
+  \item competition\_id\_trade\_list
+  \item custom\_multipart\_file
+  \item machine
+  \item machine\_trade\_list
+  \item produce
+  \item round
+  \item round\_machine\_list
+  \item round\_produce\_list
+  \item team
+  \item team\_machine\_list
+  \item team\_machine\_lock\_map
+  \item team\_material\_lock\_map
+  \item team\_material\_map
+  \item team\_member
+  \item team\_team\_produce\_list
+  \item team\_trade\_list
+  \item trade
+\end{enumerate}
 
 \subsection{用于数据库访问或操纵的软件配置项的详细设计}
 
