@@ -10,6 +10,7 @@
 \usepackage{pgfplotstable}
 \usepackage{pgfplots}
 \usepackage{fontspec}
+\usepackage{comment}
 \usepackage{booktabs} % 表格上的不同横线
 \setmonofont[Mapping={}]{Consolas}	%英文引号之类的正常显示，相当于设置英文字体
 \setsansfont{Consolas} %设置英文字体 Monaco, Consolas,  Fantasque Sans Mono
@@ -51,6 +52,8 @@
 }
 
 \renewcommand\figurename{图}
+
+\setcounter{secnumdepth}{5}
 
 \title{软件工程大作业文档}
 \author{Tomato}
@@ -1485,7 +1488,60 @@ d)缩写名或同义名；
 \subsubsection{概念设计}
 
 \subsubsection{内部设计}
+
 \subsubsection{逻辑设计}
+数据库的操作实体类共有8个，接下来将详细介绍每个类内部的成员变量。
+
+\paragraph{Admin}
+存放管理员的类。
+\begin{description}
+  \item[serialVersionUID (static final long)] 用于序列化不同版本的类。
+  \item[adminId (Long)] 主键，存放管理员ID。
+  \item[name (String)] 管理员名称。
+  \item[username (String)] 管理员用户名。
+  \item[password (String)] 管理员密码。
+  \item[enabled (boolean)] 管理员权限是否被启用。
+  \item[role (String)] 当前账户的性质，管理员为"ADMIN"。
+  \item[competitionList (List<Competition>)] 当前管理员管理的全部比赛。
+\end{description}
+
+\paragraph{Competition}
+存放比赛的类。
+\begin{description}
+  \item[serialVersionUID (static final long)] 用于序列化不同版本的类。
+  \item[competitionId (Long)] 主键，存放比赛ID。
+  \item[name (String)] 比赛名称。
+  \item[round (int)] 比赛一共有多少轮。
+  \item[presentRound (int)] 比赛当前进行到了第几轮。
+  \item[roundList (List<Round>)] 比赛每一轮的信息。
+  \item[teamList (List<Team>)] 比赛中每支队伍的信息。
+  \item[produceList (List<Produce>)] 比赛中全部生产的信息。
+  \item[competitionTradeList (List<Trade>)] 比赛中全部交易的信息。
+  \item[initial (int)] 比赛队伍的初始资产。
+  \item[status (Competition::Status)] 比赛状态，分为NOT\_START（比赛未开始）、AUCTION\_NOT\_RECORDED（拍卖结果未记录）、AUCTION\_RECORDED （拍卖结果已记录）、TRADE（交易中）、REST（休息中）和END（比赛已结束）6种。
+\end{description}
+
+\paragraph{Competition::Round}
+\begin{description}
+  \item[roundId (Long)] 主键，存放轮ID。
+  \item[startTime (Date)] 本轮开始时间。
+  \item[time (Integer)] 本轮持续时间，以分钟为单位。
+  \item[machineNumberMap (Map<Material, Integer>)] 每种机器的个数。
+  \item[machineStartPriceMap (Map<Material, Integer>)] 每种机器的起拍价格。
+  \item[machineList (List<Machine>)] 本轮拍卖的全部机器。
+  \item[machineAuctionPriceMap (Map<Machine, Integer>)] 每个机器的拍卖价格。
+\end{description}
+
+\paragraph{Machine}
+
+\paragraph{Material}
+
+\paragraph{Produce}
+
+\paragraph{Team}
+
+\paragraph{Trade}
+
 \subsubsection{物理设计}
 
 \subsection{用于数据库访问或操纵的软件配置项的详细设计}
